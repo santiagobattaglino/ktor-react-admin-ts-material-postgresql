@@ -31,7 +31,7 @@ fun Route.adminRoute() {
     val employeeDao by inject<EmployeeDao>()
 
     route("/admin") {
-
+        
         // Perform database bootstrap - copy dummy data into tables
         post("/bootstrap") {
             dataSource.tx {

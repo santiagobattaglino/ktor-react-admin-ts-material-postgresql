@@ -14,10 +14,13 @@ import io.ktor.features.DefaultHeaders
 import io.ktor.features.StatusPages
 import io.ktor.features.callIdMdc
 import io.ktor.http.HttpMethod
+import io.ktor.http.content.default
 import io.ktor.http.content.resources
 import io.ktor.http.content.static
 import io.ktor.jackson.jackson
 import io.ktor.response.respond
+import io.ktor.response.respondText
+import io.ktor.routing.get
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.util.toMap
@@ -129,8 +132,14 @@ private fun Application.bootstrapRest() {
         }
 
         // Comment it out if you are not planning to use Frontend code
-        static("frontend") {
-            resources("frontend")
+        static("/") {
+            default("frontend/index.html") // to be replaced with index file
+            // from packaged frontend
+        }
+
+        get("/") {
+            call.respondText("OK")
+
         }
 
         route("/$serviceApiVersionV1") {
