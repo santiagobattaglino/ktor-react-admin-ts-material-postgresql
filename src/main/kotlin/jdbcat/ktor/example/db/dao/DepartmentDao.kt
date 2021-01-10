@@ -47,13 +47,14 @@ class DepartmentDao(private val dataSource: DataSource) {
     }
 
     // upsert functionality
-    // if Department with this [Department.code] already exists - it will be updated
+    // if Department with this [Department.id] already exists - it will be updated
     // if it does not exist yet - it will be created.
     suspend fun insertOrUpdate(department: Department) = dataSource.txRequired { connection ->
         val stmt = upsertDepartmentSqlTemplate
             .prepareStatement(
                 connection = connection,
-                returningColumnsOnUpdate = listOf(Departments.dateCreated))
+                returningColumnsOnUpdate = listOf(Departments.dateCreated)
+            )
             .setColumns {
                 department.copyValuesTo(it)
             }
@@ -63,16 +64,16 @@ class DepartmentDao(private val dataSource: DataSource) {
         department.copy(dateCreated = dateCreated)
     }
 
-    suspend fun queryByCode(code: String) = dataSource.txRequired { connection ->
-        val stmt = selectByCodeSqlTemplate
+    suspend fun queryById(id: String) = dataSource.txRequired { connection ->
+        val stmt = selectByIdSqlTemplate
             .prepareStatement(connection)
             .setColumns {
-                it[Departments.code] = code
+                it[Departments.id] = id
             }
-        logger.debug { "getByCode(): $stmt" }
+        logger.debug { "getById(): $stmt" }
         stmt.executeQuery()
             .singleRowOrNull { Department.extractFrom(it) }
-            ?: throw EntityNotFoundException(errorMessage = "Department code=$code cannot be found")
+            ?: throw EntityNotFoundException(errorMessage = "Department id=$id cannot be found")
     }
 
     suspend fun queryAll() = dataSource.txRequired { connection ->
@@ -96,7 +97,7 @@ class DepartmentDao(private val dataSource: DataSource) {
         val stmt = deleteByCode
             .prepareStatement(connection)
             .setColumns {
-                it[Departments.code] = code
+                it[Departments.id] = code
             }
         logger.debug { "deleteByCode(): $stmt" }
         if (stmt.executeUpdate() == 0) {
@@ -129,23 +130,23 @@ class DepartmentDao(private val dataSource: DataSource) {
         private val upsertDepartmentSqlTemplate = sqlTemplate(Departments) {
             """
             | INSERT INTO $tableName (${columns.sqlNames}) VALUES (${columns.sqlValues})
-            | ON CONFLICT ($code)
+            | ON CONFLICT ($id)
             | DO UPDATE SET ${(columns - dateCreated).pgAssignNamesToExcludedNames}
             """
             // We don't want to update dateCreated field,
             // it needs to be updated only once - when record is added
         }
 
-        private val selectByCodeSqlTemplate = sqlTemplate(Departments) {
-            "SELECT * FROM $tableName WHERE $code = ${code.v}"
+        private val selectByIdSqlTemplate = sqlTemplate(Departments) {
+            "SELECT * FROM $tableName WHERE $id = ${id.v}"
         }
 
         private val selectAllOrderedByCodeSqlTemplate = sqlTemplate(Departments) {
-            "SELECT * FROM $tableName ORDER BY $code"
+            "SELECT * FROM $tableName ORDER BY $id"
         }
 
         private val deleteByCode = sqlTemplate(Departments) {
-            "DELETE FROM $tableName WHERE $code = ${code.v}"
+            "DELETE FROM $tableName WHERE $id = ${id.v}"
         }
 
         private val countAll = sqlTemplate(CounterResult, Departments) { cr, e ->

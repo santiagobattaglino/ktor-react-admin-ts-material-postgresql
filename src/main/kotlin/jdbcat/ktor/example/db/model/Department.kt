@@ -10,7 +10,7 @@ import java.util.Date
 
 // Table definition (representation of "departments" database table)
 object Departments : Table(tableName = "departments") {
-    val code = varchar("code", size = 3, specifier = "PRIMARY KEY").nonnull()
+    val id = varchar("code", size = 3, specifier = "PRIMARY KEY").nonnull()
     val name = varchar("name", size = 100, specifier = "UNIQUE").nonnull()
     val countryCode = varchar("country_code", size = 3).nonnull()
     val city = varchar("city", size = 20).nonnull()
@@ -20,7 +20,7 @@ object Departments : Table(tableName = "departments") {
 
 // Table row definition
 data class Department(
-    val code: String,
+    val id: String,
     val name: String,
     val countryCode: String,
     val city: String,
@@ -28,7 +28,7 @@ data class Department(
     val dateCreated: Date?
 ) {
     fun copyValuesTo(builder: ColumnValueBuilder) {
-        builder[Departments.code] = code
+        builder[Departments.id] = id
         builder[Departments.name] = name
         builder[Departments.countryCode] = countryCode
         builder[Departments.city] = city
@@ -40,7 +40,7 @@ data class Department(
 
     companion object {
         fun extractFrom(extractor: ColumnValueExtractor) = Department(
-            code = extractor[Departments.code],
+            id = extractor[Departments.id],
             name = extractor[Departments.name],
             countryCode = extractor[Departments.countryCode],
             city = extractor[Departments.city],

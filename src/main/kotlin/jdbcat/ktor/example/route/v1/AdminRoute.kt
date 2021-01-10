@@ -57,16 +57,16 @@ private suspend fun createInitialDepartments(dataSource: DataSource) = dataSourc
         "INSERT INTO $tableName (${columns.sqlNames}) VALUES (${columns.sqlValues})"
     }
     val departments = listOf(
-        Department(code = "SEA", name = "Seattle's Office", countryCode = "USA", city = "Seattle",
+        Department(id = "SEA", name = "Seattle's Office", countryCode = "USA", city = "Seattle",
             comments = "Headquarter and R&D", dateCreated = Date(Date().time - 99999999999L)
         ),
-        Department(code = "CHI", name = "Chicago's Office", countryCode = "USA", city = "Chicago",
+        Department(id = "CHI", name = "Chicago's Office", countryCode = "USA", city = "Chicago",
             comments = "Financial department", dateCreated = Date(Date().time - 77777777777L)
         ),
-        Department(code = "BER", name = "Berlin's Office", countryCode = "DEU", city = "Berlin",
+        Department(id = "BER", name = "Berlin's Office", countryCode = "DEU", city = "Berlin",
             comments = "R&D", dateCreated = Date(Date().time - 55555555555L)
         ),
-        Department(code = "AMS", name = "Amsterdam's Office", countryCode = "NLD", city = "Amsterdam",
+        Department(id = "AMS", name = "Amsterdam's Office", countryCode = "NLD", city = "Amsterdam",
             comments = "Just for fun :)", dateCreated = Date(Date().time - 33333333333L)
         )
     )
@@ -74,7 +74,7 @@ private suspend fun createInitialDepartments(dataSource: DataSource) = dataSourc
     // TODO Add batch functionality
     for (department in departments) {
         insertDepartmentStmt.setColumns {
-            it[Departments.code] = department.code
+            it[Departments.id] = department.id
             it[Departments.name] = department.name
             it[Departments.countryCode] = department.countryCode
             it[Departments.city] = department.city

@@ -42,9 +42,9 @@ object DepartmentsRouteTest : AppSpek({
                         response.status() `should equal` HttpStatusCode.OK
                         val list = jacksonMapper.readValue<List<DepartmentResponse>>(response.content!!)
                         list.size `should equal` 2
-                        val seattleResponse = list.find { it.code == seattleDepartment.code }!!
+                        val seattleResponse = list.find { it.id == seattleDepartment.id }!!
                         seattleResponse sameAs seattleDepartment
-                        val chicagoResponse = list.find { it.code == chicagoDepartment.code }!!
+                        val chicagoResponse = list.find { it.id == chicagoDepartment.id }!!
                         chicagoResponse sameAs chicagoDepartment
                     }
                 }
@@ -103,7 +103,7 @@ object DepartmentsRouteTest : AppSpek({
                     with(call) {
                         val response =
                             jacksonMapper.readValue<DepartmentResponse>(response.content!!)
-                        response.code `should equal` "SEA"
+                        response.id `should equal` "SEA"
                         response.name `should equal` request.name
                         response.countryCode `should equal` request.countryCode
                         response.city `should equal` request.city
@@ -129,7 +129,7 @@ object DepartmentsRouteTest : AppSpek({
                     }
                     with(call) {
                         val response = jacksonMapper.readValue<DepartmentResponse>(response.content!!)
-                        response.code `should equal` "SEA"
+                        response.id `should equal` "SEA"
                         response.name `should equal` request.name
                         response.countryCode `should equal` request.countryCode
                         response.city `should equal` request.city
@@ -210,7 +210,7 @@ object DepartmentsRouteTest : AppSpek({
 })
 
 fun newSeattleDepartment() = Department(
-    code = "SEA",
+    id = "SEA",
     name = "Seattle office",
     countryCode = "USA",
     city = "Seattle",
@@ -219,7 +219,7 @@ fun newSeattleDepartment() = Department(
 )
 
 fun newChicagoDepartment() = Department(
-    code = "CHI",
+    id = "CHI",
     name = "Chicago office",
     countryCode = "USA",
     city = "Chicago",
@@ -251,7 +251,7 @@ fun addEmployeeRequest() = AddEmployeeRequest(
 )
 
 private infix fun DepartmentResponse.sameAs(department: Department) {
-    this.code `should equal` department.code
+    this.id `should equal` department.id
     this.name `should equal` department.name
     this.countryCode `should equal` department.countryCode
     this.city `should equal` department.city

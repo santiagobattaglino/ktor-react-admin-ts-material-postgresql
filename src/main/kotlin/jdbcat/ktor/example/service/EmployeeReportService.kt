@@ -51,7 +51,7 @@ class EmployeeReportService(private val dataSource: DataSource) {
             |   FROM
             |       ${d.tableName} AS t_dep
             |       LEFT OUTER JOIN ${e.tableName} AS t_emp
-            |           ON t_dep.${d.code} = t_emp.${e.departmentCode}
+            |           ON t_dep.${d.id} = t_emp.${e.departmentCode}
             |   WHERE
             |       t_dep.${d.countryCode} = ${d.countryCode.v}
             |           AND
@@ -59,7 +59,7 @@ class EmployeeReportService(private val dataSource: DataSource) {
             |           AND
             |       t_emp.${e.age} <= ${e.age["upperAge"]}
             |   ORDER BY
-            |       t_dep.${d.code}, t_emp.${e.lastName}, t_emp.${e.firstName}
+            |       t_dep.${d.id}, t_emp.${e.lastName}, t_emp.${e.firstName}
             """
         }
     }

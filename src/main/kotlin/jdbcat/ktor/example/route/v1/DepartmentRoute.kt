@@ -49,7 +49,7 @@ fun Route.departmentRoute() {
             val code = call.parameters["code"]!!
             dataSource.tx {
                 val departmentResponse = departmentDao
-                    .queryByCode(code = code)
+                    .queryById(id = code)
                     .let { DepartmentResponse.fromEntity(it) }
                 call.respond(departmentResponse)
             }

@@ -13,24 +13,18 @@ import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
 import io.ktor.features.StatusPages
 import io.ktor.features.callIdMdc
-import io.ktor.http.HttpMethod
-import io.ktor.http.content.default
-import io.ktor.http.content.resources
-import io.ktor.http.content.static
 import io.ktor.jackson.jackson
 import io.ktor.response.respond
-import io.ktor.response.respondText
-import io.ktor.routing.get
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.util.toMap
 import jdbcat.core.tx
 import jdbcat.ktor.example.db.dao.DepartmentDao
 import jdbcat.ktor.example.db.dao.EmployeeDao
-import jdbcat.ktor.example.route.v1.healthCheckRoute
 import jdbcat.ktor.example.route.v1.adminRoute
 import jdbcat.ktor.example.route.v1.departmentRoute
 import jdbcat.ktor.example.route.v1.employeeRoute
+import jdbcat.ktor.example.route.v1.healthCheckRoute
 import jdbcat.ktor.example.route.v1.reportRoute
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -70,7 +64,18 @@ private fun Application.bootstrapDatabase() = runBlocking {
 
 private fun Application.bootstrapRest() {
 
-    install(DefaultHeaders)
+    install(DefaultHeaders) {
+        header("Content-Range", "departments 0-30/30")
+        header("X-Total-Count", "30")
+        //header("Content-Range", "departments 0-20/20")
+        //header("Access-Control-Allow-Origin", "http://localhost:3000")
+        //header("Access-Control-Allow-Headers", "*")
+        /*header("Access-Control-Allow-Methods", "GET, POST")
+        header("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization")
+        header("Access-Control-Allow-Credentials", "true")
+        header("Access-Control-Allow-Headers", "X-Requested-With")*/
+    }
+
     install(AutoHeadResponse)
 
     // ktor 0.9.5 added MDC support for coroutines and this allows us to print call request id for the entire
@@ -91,13 +96,25 @@ private fun Application.bootstrapRest() {
 
     // Some frameworks such as Angular require additional CORS configuration
     install(CORS) {
-        method(HttpMethod.Options)
-        method(HttpMethod.Put)
-        method(HttpMethod.Delete)
-        header("*")
-        allowCredentials = true
-        allowSameOrigin = true
-        anyHost()
+        //header("Access-Control-Allow-Origin: *")
+        //header("Access-Control-Allow-Headers: *")
+        //exposeHeader("Content-Range")
+        //header("Access-Control-Expose-Headers: *")
+        header("Access-Control-Expose-Headers: Content-Range")
+        header("Access-Control-Expose-Headers: X-Total-Count")
+        //header("Access-Control-Expose-Headers: Content-Range")
+        //header("Access-Control-Allow-Origin: http://localhost:3000")
+        //allowCredentials = true
+        //method(HttpMethod.Options)
+        //method(HttpMethod.Put)
+        //method(HttpMethod.Delete)
+        //method(HttpMethod.Get)
+        //method(HttpMethod.Post)
+        //header("*")
+        //header("Access-Control-Allow-Origin: *")
+        //header("Access-Control-Allow-Methods: GET, POST")
+        //allowSameOrigin = true
+        //anyHost()
     }
 
     // Content conversions - here we setup serialization and deserialization of JSON objects
@@ -132,15 +149,14 @@ private fun Application.bootstrapRest() {
         }
 
         // Comment it out if you are not planning to use Frontend code
-        static("/") {
-            default("frontend/index.html") // to be replaced with index file
-            // from packaged frontend
-        }
+        //static("/") {
+        //default("frontend/index.html") // to be replaced with index file
+        // from packaged frontend
+        //}
 
-        get("/") {
-            call.respondText("OK")
-
-        }
+        //get("client/admin/") {
+        //call.respondText("OK")
+        //}
 
         route("/$serviceApiVersionV1") {
             // api/v1/healthcheck

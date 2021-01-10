@@ -22,7 +22,7 @@ data class AddOrUpdateDepartmentRequest(
      * it as a parameter from URI request - it needs to be passed here:
      */
     fun toEntity(code: String) = Department(
-        code = code,
+        id = code,
         name = name,
         countryCode = countryCode,
         city = city,
@@ -33,7 +33,7 @@ data class AddOrUpdateDepartmentRequest(
 
 // Response with Department record
 data class DepartmentResponse(
-    val code: String,
+    val id: String,
     val name: String,
     val countryCode: String,
     val city: String,
@@ -47,7 +47,7 @@ data class DepartmentResponse(
     companion object {
         fun fromEntity(entity: Department) =
             DepartmentResponse(
-                code = entity.code,
+                id = entity.id,
                 name = entity.name,
                 countryCode = entity.countryCode,
                 city = entity.city,

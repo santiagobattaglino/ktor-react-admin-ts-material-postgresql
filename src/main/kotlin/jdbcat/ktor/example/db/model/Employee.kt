@@ -19,7 +19,7 @@ object Employees : Table(tableName = "employees") {
     val departmentCode = varchar(
         "department_code",
         size = 3,
-        specifier = "REFERENCES ${Departments.tableName} (${Departments.code.name})"
+        specifier = "REFERENCES ${Departments.tableName} (${Departments.id.name})"
     ).nonnull()
     val comments = pgText("comments")
     val dateCreated = javaDate("date_created").nonnull()
