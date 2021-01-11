@@ -1,4 +1,6 @@
-# What do we build?
+# Ktor backend with react-admin app
+
+###### TODO: migrate departments to products
 
 We are building a basic REST service to manage Departments and Employees entities with **ktor** framework.
 
