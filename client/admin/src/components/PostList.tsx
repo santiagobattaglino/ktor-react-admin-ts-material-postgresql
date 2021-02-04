@@ -1,11 +1,16 @@
 import React from 'react'
-import {Datagrid, DeleteButton, EditButton, List, TextField} from 'react-admin'
+import {Datagrid, DeleteButton, EditButton, List, TextField, DateField} from 'react-admin'
 
 const PostList = (props: any) => {
     return (
         <List {...props}>
             <Datagrid>
                 <TextField source='id'/>
+                <TextField source='name'/>
+                <TextField source='countryCode'/>
+                <TextField source='city'/>
+                <TextField source='comments'/>
+                <DateField source='dateCreated'/>
                 <EditButton basePath='departments'/>
                 <DeleteButton basePath='departments'/>
             </Datagrid>

@@ -228,10 +228,12 @@ fun newChicagoDepartment() = Department(
 )
 
 fun newUpdatedDepartmentRequest() = AddOrUpdateDepartmentRequest(
+    id = "HAR",
     name = "-Seattle office-",
     countryCode = "USA",
     city = "Bellevue",
-    comments = "Even better office"
+    comments = "Even better office",
+    publishedAt = "2021-02-02"
 )
 
 fun newEmployee(departmentCode: String) = Employee(

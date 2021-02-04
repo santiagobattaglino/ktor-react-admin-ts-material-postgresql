@@ -7,11 +7,13 @@ import java.util.Date
 
 // Request to add/update Department record
 data class AddOrUpdateDepartmentRequest(
+    val id: String,
     val name: String,
     val countryCode: String,
     val city: String,
     // JSON request field name can be different from parameter name
-    @JsonProperty("notes") val comments: String?
+    @JsonProperty("comments") val comments: String?,
+    val publishedAt: String
 ) {
     /**
      * Having "code" simplifies deserialization process. PUT requests
@@ -38,7 +40,7 @@ data class DepartmentResponse(
     val countryCode: String,
     val city: String,
     // JSON response field name can be different from parameter name
-    @JsonProperty("notes") val comments: String?,
+    @JsonProperty("comments") val comments: String?,
     val dateCreated: Date,
     // We can provide a list of employees if necessary
     @JsonInclude(JsonInclude.Include.NON_NULL)

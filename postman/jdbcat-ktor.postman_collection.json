@@ -37,7 +37,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"name\": \"Chicago's Office\",\n\t\"countryCode\": \"USA\",\n\t\"city\": \"Chicago\",\n\t\"notes\": \"Hello Chicago\"\n}"
+					"raw": "{\n\t\"name\": \"Chicago's Office\",\n\t\"countryCode\": \"USA\",\n\t\"city\": \"Chicago\",\n\t\"comments\": \"Hello Chicago\"\n}"
 				},
 				"url": {
 					"raw": "{{base-url}}/api/v1/departments/CHI",

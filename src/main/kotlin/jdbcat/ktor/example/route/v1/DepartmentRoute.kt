@@ -55,6 +55,19 @@ fun Route.departmentRoute() {
             }
         }
 
+        // POST Insert Department
+        post("/") {
+            val departmentRequest = call.receive<AddOrUpdateDepartmentRequest>()
+            //val code = call.parameters["code"]!!
+            val departmentToAddOrUpdate = departmentRequest.toEntity(code = departmentRequest.id)
+            dataSource.tx {
+                val departmentResponse = departmentDao
+                    .insertOrUpdate(department = departmentToAddOrUpdate)
+                    .let { DepartmentResponse.fromEntity(it) }
+                call.respond(departmentResponse)
+            }
+        }
+
         // Create new Department or update existing one
         // Since we want for caller to provide a department code (so basically caller is responsible
         // of creating "primary key") - we use PUT instead of POST to create a new resource.
