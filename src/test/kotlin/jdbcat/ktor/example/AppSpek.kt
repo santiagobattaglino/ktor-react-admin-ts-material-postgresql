@@ -8,6 +8,7 @@ import io.ktor.application.install
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.withTestApplication
 import jdbcat.core.tx
+import jdbcat.ktor.example.db.dao.CategoryDao
 import jdbcat.ktor.example.db.dao.DepartmentDao
 import jdbcat.ktor.example.db.dao.EmployeeDao
 import kotlinx.coroutines.runBlocking
@@ -48,10 +49,12 @@ abstract class AppSpek(val appRoot: Root.() -> Unit) : Spek({
                 // Clean-up after each test
                 val employeeDao = application.get<EmployeeDao>()
                 val departmentDao = application.get<DepartmentDao>()
+                val categoryDao = application.get<CategoryDao>()
                 val dataSource = application.get<DataSource>()
                 dataSource.tx {
                     employeeDao.dropTableIfExists()
                     departmentDao.dropTableIfExists()
+                    categoryDao.dropTableIfExists()
                 }
                 (dataSource as HikariDataSource).close()
             }

@@ -20,6 +20,7 @@ function App() {
             />
             <Resource
                 name='api/v1/categories'
+                options={{ label: 'Categorías' }}
                 list={CatList}
                 create={CatCreate}
                 edit={CatEdit}
