@@ -53,7 +53,7 @@ class EmployeeDao(private val dataSource: DataSource) {
                 connection = connection,
                 returningColumnsOnUpdate = listOf(Employees.id))
             .setColumns {
-                employee.copyFieldsTo(it)
+                employee.copyValuesTo(it)
             }
         logger.debug { "add(): $stmt" }
         try {
@@ -76,7 +76,7 @@ class EmployeeDao(private val dataSource: DataSource) {
                 connection = connection,
                 returningColumnsOnUpdate = listOf(Employees.dateCreated))
             .setColumns {
-                employee.copyFieldsTo(it)
+                employee.copyValuesTo(it)
             }
         logger.debug { "update(): $stmt" }
         if (stmt.executeUpdate() == 0) {

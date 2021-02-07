@@ -19,9 +19,11 @@ import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.util.toMap
 import jdbcat.core.tx
+import jdbcat.ktor.example.db.dao.CategoryDao
 import jdbcat.ktor.example.db.dao.DepartmentDao
 import jdbcat.ktor.example.db.dao.EmployeeDao
 import jdbcat.ktor.example.route.v1.adminRoute
+import jdbcat.ktor.example.route.v1.categoryRoute
 import jdbcat.ktor.example.route.v1.departmentRoute
 import jdbcat.ktor.example.route.v1.employeeRoute
 import jdbcat.ktor.example.route.v1.healthCheckRoute
@@ -50,23 +52,31 @@ fun Application.bootstrap() {
 // Create tables and initialize data if necessary
 private fun Application.bootstrapDatabase() = runBlocking {
     val dataSource by inject<DataSource>()
+
     val departmentDao by inject<DepartmentDao>()
     val employeeDao by inject<EmployeeDao>()
+    val categoryDao by inject<CategoryDao>()
 
     dataSource.tx {
-        // Uncomment this lines if you want to delete tables first (e.g. if you have changed table layouts)
+
+        // Drop tables
         // employeeDao.dropTableIfExists()
         // departmentDao.dropTableIfExists()
+        //categoryDao.dropTableIfExists()
+
+        // Create tables
         departmentDao.createTableIfNotExists()
         employeeDao.createTableIfNotExists()
+        categoryDao.createTableIfNotExists()
     }
 }
 
 private fun Application.bootstrapRest() {
 
     install(DefaultHeaders) {
-        header("Content-Range", "departments 0-30/30")
-        header("X-Total-Count", "30")
+        header("Content-Range", "departments 0-100/100")
+        header("X-Total-Count", "100")
+
         //header("Content-Range", "departments 0-20/20")
         //header("Access-Control-Allow-Origin", "http://localhost:3000")
         //header("Access-Control-Allow-Headers", "*")
@@ -96,12 +106,13 @@ private fun Application.bootstrapRest() {
 
     // Some frameworks such as Angular require additional CORS configuration
     install(CORS) {
+        header("Access-Control-Expose-Headers: Content-Range")
+        header("Access-Control-Expose-Headers: X-Total-Count")
+
         //header("Access-Control-Allow-Origin: *")
         //header("Access-Control-Allow-Headers: *")
         //exposeHeader("Content-Range")
         //header("Access-Control-Expose-Headers: *")
-        header("Access-Control-Expose-Headers: Content-Range")
-        header("Access-Control-Expose-Headers: X-Total-Count")
         //header("Access-Control-Expose-Headers: Content-Range")
         //header("Access-Control-Allow-Origin: http://localhost:3000")
         //allowCredentials = true
@@ -170,6 +181,8 @@ private fun Application.bootstrapRest() {
             employeeRoute()
             // api/v1/reports
             reportRoute()
+            // api/v1/categories
+            categoryRoute()
         }
     }
 }

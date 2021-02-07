@@ -1,6 +1,7 @@
 package jdbcat.ktor.example
 
 import com.zaxxer.hikari.HikariDataSource
+import jdbcat.ktor.example.db.dao.CategoryDao
 import jdbcat.ktor.example.db.dao.DepartmentDao
 import jdbcat.ktor.example.db.dao.EmployeeDao
 import jdbcat.ktor.example.service.EmployeeReportService
@@ -22,9 +23,10 @@ val appModule = module(createdAtStart = true) {
         HikariDataSource((get() as AppSettings).hikariMainDatabaseConfig)
     }
 
-    // DAO objects
+    // Inject DAO objects
     single { DepartmentDao(dataSource = get()) }
     single { EmployeeDao(dataSource = get()) }
+    single { CategoryDao(dataSource = get()) }
 
     // Business logic objects
     single { EmployeeReportService(dataSource = get()) }
