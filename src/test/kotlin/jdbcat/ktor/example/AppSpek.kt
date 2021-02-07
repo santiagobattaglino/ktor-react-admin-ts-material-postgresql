@@ -11,6 +11,7 @@ import jdbcat.core.tx
 import jdbcat.ktor.example.db.dao.CategoryDao
 import jdbcat.ktor.example.db.dao.DepartmentDao
 import jdbcat.ktor.example.db.dao.EmployeeDao
+import jdbcat.ktor.example.db.dao.ProductDao
 import kotlinx.coroutines.runBlocking
 import org.koin.Logger.SLF4JLogger
 import org.koin.ktor.ext.Koin
@@ -28,7 +29,7 @@ import javax.sql.DataSource
 abstract class AppSpek(val appRoot: Root.() -> Unit) : Spek({
 
     beforeGroup {
-        if (! postgresContainer.isRunning) {
+        if (!postgresContainer.isRunning) {
             postgresContainer.start()
         }
     }
@@ -47,14 +48,18 @@ abstract class AppSpek(val appRoot: Root.() -> Unit) : Spek({
                 test.invoke(this@withTestApplication)
 
                 // Clean-up after each test
+                val dataSource = application.get<DataSource>()
+
                 val employeeDao = application.get<EmployeeDao>()
                 val departmentDao = application.get<DepartmentDao>()
                 val categoryDao = application.get<CategoryDao>()
-                val dataSource = application.get<DataSource>()
+                val productDao = application.get<ProductDao>()
+
                 dataSource.tx {
                     employeeDao.dropTableIfExists()
                     departmentDao.dropTableIfExists()
                     categoryDao.dropTableIfExists()
+                    productDao.dropTableIfExists()
                 }
                 (dataSource as HikariDataSource).close()
             }
@@ -62,7 +67,10 @@ abstract class AppSpek(val appRoot: Root.() -> Unit) : Spek({
 
         private fun initApp(application: Application) {
             val mainConfigProperties = Properties().apply {
-                put("jdbcat-ktor.main-db.hikari.dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource")
+                put(
+                    "jdbcat-ktor.main-db.hikari.dataSourceClassName",
+                    "org.postgresql.ds.PGSimpleDataSource"
+                )
                 put("jdbcat-ktor.main-db.hikari.dataSource.url", postgresContainer.jdbcUrl)
                 put("jdbcat-ktor.main-db.hikari.dataSource.user", postgresContainer.username)
                 put("jdbcat-ktor.main-db.hikari.dataSource.password", postgresContainer.password)

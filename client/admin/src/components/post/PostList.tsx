@@ -3,7 +3,7 @@ import {Datagrid, DeleteButton, EditButton, List, TextField, DateField} from 're
 
 const PostList = (props: any) => {
     return (
-        <List {...props}>
+        <List {...props} perPage={25}>
             <Datagrid>
                 <TextField source='id'/>
                 <TextField source='name'/>

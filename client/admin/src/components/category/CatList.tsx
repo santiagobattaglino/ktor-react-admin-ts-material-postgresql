@@ -1,18 +1,16 @@
 import React from 'react'
-import {Datagrid, DeleteButton, EditButton, List, TextField, DateField} from 'react-admin'
+import { Datagrid, DeleteButton, EditButton, List, TextField } from 'react-admin'
 
-const PostList = (props: any) => {
+const CatList = (props: any) => {
     return (
-        <List {...props}>
+        <List {...props} perPage={25}>
             <Datagrid>
-                <TextField source='id'/>
-                <TextField source='name'/>
-                <DateField source='dateCreated'/>
-                <EditButton basePath='categories'/>
-                <DeleteButton basePath='categories'/>
+                <TextField source='name' label='Nombre' />
+                <EditButton basePath='categories' undoable={false} />
+                <DeleteButton basePath='categories' undoable={false} />
             </Datagrid>
         </List>
     )
 }
 
-export default PostList
+export default CatList

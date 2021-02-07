@@ -22,11 +22,13 @@ import jdbcat.core.tx
 import jdbcat.ktor.example.db.dao.CategoryDao
 import jdbcat.ktor.example.db.dao.DepartmentDao
 import jdbcat.ktor.example.db.dao.EmployeeDao
+import jdbcat.ktor.example.db.dao.ProductDao
 import jdbcat.ktor.example.route.v1.adminRoute
 import jdbcat.ktor.example.route.v1.categoryRoute
 import jdbcat.ktor.example.route.v1.departmentRoute
 import jdbcat.ktor.example.route.v1.employeeRoute
 import jdbcat.ktor.example.route.v1.healthCheckRoute
+import jdbcat.ktor.example.route.v1.productRoute
 import jdbcat.ktor.example.route.v1.reportRoute
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -56,28 +58,30 @@ private fun Application.bootstrapDatabase() = runBlocking {
     val departmentDao by inject<DepartmentDao>()
     val employeeDao by inject<EmployeeDao>()
     val categoryDao by inject<CategoryDao>()
+    val productDao by inject<ProductDao>()
 
     dataSource.tx {
 
-        // Drop tables
-        // employeeDao.dropTableIfExists()
-        // departmentDao.dropTableIfExists()
+        // Drop tables (optional)
+        //employeeDao.dropTableIfExists()
+        //departmentDao.dropTableIfExists()
         //categoryDao.dropTableIfExists()
+        //productDao.dropTableIfExists()
 
         // Create tables
         departmentDao.createTableIfNotExists()
         employeeDao.createTableIfNotExists()
         categoryDao.createTableIfNotExists()
+        productDao.createTableIfNotExists()
     }
 }
 
 private fun Application.bootstrapRest() {
 
     install(DefaultHeaders) {
-        header("Content-Range", "departments 0-100/100")
+        //header("Content-Range", "items 0-100/100")
+        // TODO X-Total-Count value hardcoded on every request
         header("X-Total-Count", "100")
-
-        //header("Content-Range", "departments 0-20/20")
         //header("Access-Control-Allow-Origin", "http://localhost:3000")
         //header("Access-Control-Allow-Headers", "*")
         /*header("Access-Control-Allow-Methods", "GET, POST")
@@ -106,7 +110,7 @@ private fun Application.bootstrapRest() {
 
     // Some frameworks such as Angular require additional CORS configuration
     install(CORS) {
-        header("Access-Control-Expose-Headers: Content-Range")
+        //header("Access-Control-Expose-Headers: Content-Range")
         header("Access-Control-Expose-Headers: X-Total-Count")
 
         //header("Access-Control-Allow-Origin: *")
@@ -159,16 +163,6 @@ private fun Application.bootstrapRest() {
             application.log.debug(it.call.request.headers.toMap().toString())
         }
 
-        // Comment it out if you are not planning to use Frontend code
-        //static("/") {
-        //default("frontend/index.html") // to be replaced with index file
-        // from packaged frontend
-        //}
-
-        //get("client/admin/") {
-        //call.respondText("OK")
-        //}
-
         route("/$serviceApiVersionV1") {
             // api/v1/healthcheck
             healthCheckRoute()
@@ -183,6 +177,8 @@ private fun Application.bootstrapRest() {
             reportRoute()
             // api/v1/categories
             categoryRoute()
+            // api/v1/products
+            productRoute()
         }
     }
 }
