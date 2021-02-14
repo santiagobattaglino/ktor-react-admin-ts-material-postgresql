@@ -23,6 +23,7 @@ import jdbcat.ktor.example.db.dao.CategoryDao
 import jdbcat.ktor.example.db.dao.DepartmentDao
 import jdbcat.ktor.example.db.dao.EmployeeDao
 import jdbcat.ktor.example.db.dao.ProductDao
+import jdbcat.ktor.example.db.dao.UserDao
 import jdbcat.ktor.example.route.v1.adminRoute
 import jdbcat.ktor.example.route.v1.categoryRoute
 import jdbcat.ktor.example.route.v1.departmentRoute
@@ -30,6 +31,7 @@ import jdbcat.ktor.example.route.v1.employeeRoute
 import jdbcat.ktor.example.route.v1.healthCheckRoute
 import jdbcat.ktor.example.route.v1.productRoute
 import jdbcat.ktor.example.route.v1.reportRoute
+import jdbcat.ktor.example.route.v1.userRoute
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.koin.ktor.ext.inject
@@ -59,20 +61,23 @@ private fun Application.bootstrapDatabase() = runBlocking {
     val employeeDao by inject<EmployeeDao>()
     val categoryDao by inject<CategoryDao>()
     val productDao by inject<ProductDao>()
+    val userDao by inject<UserDao>()
 
     dataSource.tx {
 
-        // Drop tables (optional)
+        // Drop tables (optional, we need to drop tables to re create them when the db schema is modified)
         //employeeDao.dropTableIfExists()
         //departmentDao.dropTableIfExists()
         //categoryDao.dropTableIfExists()
-        //productDao.dropTableIfExists()
+        productDao.dropTableIfExists()
+        //userDao.dropTableIfExists()
 
         // Create tables
         departmentDao.createTableIfNotExists()
         employeeDao.createTableIfNotExists()
         categoryDao.createTableIfNotExists()
         productDao.createTableIfNotExists()
+        userDao.createTableIfNotExists()
     }
 }
 
@@ -179,6 +184,8 @@ private fun Application.bootstrapRest() {
             categoryRoute()
             // api/v1/products
             productRoute()
+            // api/v1/users
+            userRoute()
         }
     }
 }

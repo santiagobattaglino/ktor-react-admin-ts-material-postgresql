@@ -51,6 +51,12 @@ object ProductsRouteTest : AppSpek({
 
 fun newProduct(name: String) = Product(
     id = null,
+    catId = 1,
     name = name,
+    material = "material",
+    color = "color",
+    priceId = 1,
+    notes = "notes",
+    idMl = null,
     dateCreated = Date()
 )

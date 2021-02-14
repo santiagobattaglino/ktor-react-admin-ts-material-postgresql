@@ -11,6 +11,9 @@ import CatEdit from './components/category/CatEdit';
 import ProdCreate from './components/product/ProdCreate';
 import ProdList from './components/product/ProdList';
 import ProdEdit from './components/product/ProdEdit';
+import UserCreate from './components/user/UserCreate';
+import UserList from './components/user/UserList';
+import UserEdit from './components/user/UserEdit';
 
 function App() {
     return (
@@ -35,6 +38,13 @@ function App() {
                 list={ProdList}
                 create={ProdCreate}
                 edit={ProdEdit}
+            />
+            <Resource
+                name='api/v1/users'
+                options={{ label: 'Usuarios' }}
+                list={UserList}
+                create={UserCreate}
+                edit={UserEdit}
             />
         </Admin>
     );

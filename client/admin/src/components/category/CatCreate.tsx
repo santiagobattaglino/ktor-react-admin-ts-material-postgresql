@@ -5,7 +5,7 @@ const CatCreate = (props: any) => {
     return (
         <Create title='Nueva Categoría' {...props}>
             <SimpleForm redirect="list">
-                <TextInput source='name' autoFocus />
+                <TextInput source='name' label='Nombre' autoFocus />
             </SimpleForm>
         </Create>
     )

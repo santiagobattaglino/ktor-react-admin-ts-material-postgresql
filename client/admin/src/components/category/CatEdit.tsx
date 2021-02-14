@@ -5,7 +5,7 @@ const CatEdit = (props: any) => {
     return (
         <Edit title='Editar Categoría' {...props}>
             <SimpleForm>
-                <TextInput source='name' autoFocus />
+                <TextInput source='name' label='Nombre' autoFocus />
             </SimpleForm>
         </Edit>
     )

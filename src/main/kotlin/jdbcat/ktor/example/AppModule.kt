@@ -5,6 +5,7 @@ import jdbcat.ktor.example.db.dao.CategoryDao
 import jdbcat.ktor.example.db.dao.DepartmentDao
 import jdbcat.ktor.example.db.dao.EmployeeDao
 import jdbcat.ktor.example.db.dao.ProductDao
+import jdbcat.ktor.example.db.dao.UserDao
 import jdbcat.ktor.example.service.EmployeeReportService
 import org.koin.dsl.module
 import javax.sql.DataSource
@@ -29,6 +30,7 @@ val appModule = module(createdAtStart = true) {
     single { EmployeeDao(dataSource = get()) }
     single { CategoryDao(dataSource = get()) }
     single { ProductDao(dataSource = get()) }
+    single { UserDao(dataSource = get()) }
 
     // Business logic objects
     single { EmployeeReportService(dataSource = get()) }
