@@ -41,6 +41,7 @@ fun Route.departmentRoute() {
                     .queryAll()
                     .map { DepartmentResponse.fromEntity(it) }
                     .toList()
+                call.response.header("X-Total-Count", departmentsResponse.size)
                 call.respond(departmentsResponse)
             }
         }

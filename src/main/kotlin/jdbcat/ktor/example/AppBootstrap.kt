@@ -20,17 +20,23 @@ import io.ktor.routing.routing
 import io.ktor.util.toMap
 import jdbcat.core.tx
 import jdbcat.ktor.example.db.dao.CategoryDao
+import jdbcat.ktor.example.db.dao.ColorDao
 import jdbcat.ktor.example.db.dao.DepartmentDao
 import jdbcat.ktor.example.db.dao.EmployeeDao
+import jdbcat.ktor.example.db.dao.PriceDao
 import jdbcat.ktor.example.db.dao.ProductDao
+import jdbcat.ktor.example.db.dao.StockDao
 import jdbcat.ktor.example.db.dao.UserDao
 import jdbcat.ktor.example.route.v1.adminRoute
 import jdbcat.ktor.example.route.v1.categoryRoute
+import jdbcat.ktor.example.route.v1.colorRoute
 import jdbcat.ktor.example.route.v1.departmentRoute
 import jdbcat.ktor.example.route.v1.employeeRoute
 import jdbcat.ktor.example.route.v1.healthCheckRoute
+import jdbcat.ktor.example.route.v1.priceRoute
 import jdbcat.ktor.example.route.v1.productRoute
 import jdbcat.ktor.example.route.v1.reportRoute
+import jdbcat.ktor.example.route.v1.stockRoute
 import jdbcat.ktor.example.route.v1.userRoute
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -62,6 +68,9 @@ private fun Application.bootstrapDatabase() = runBlocking {
     val categoryDao by inject<CategoryDao>()
     val productDao by inject<ProductDao>()
     val userDao by inject<UserDao>()
+    val colorDao by inject<ColorDao>()
+    val priceDao by inject<PriceDao>()
+    val stockDao by inject<StockDao>()
 
     dataSource.tx {
 
@@ -69,8 +78,11 @@ private fun Application.bootstrapDatabase() = runBlocking {
         //employeeDao.dropTableIfExists()
         //departmentDao.dropTableIfExists()
         //categoryDao.dropTableIfExists()
-        productDao.dropTableIfExists()
+        //productDao.dropTableIfExists()
         //userDao.dropTableIfExists()
+        //colorDao.dropTableIfExists()
+        //priceDao.dropTableIfExists()
+        //stockDao.dropTableIfExists()
 
         // Create tables
         departmentDao.createTableIfNotExists()
@@ -78,23 +90,15 @@ private fun Application.bootstrapDatabase() = runBlocking {
         categoryDao.createTableIfNotExists()
         productDao.createTableIfNotExists()
         userDao.createTableIfNotExists()
+        colorDao.createTableIfNotExists()
+        priceDao.createTableIfNotExists()
+        stockDao.createTableIfNotExists()
     }
 }
 
 private fun Application.bootstrapRest() {
 
-    install(DefaultHeaders) {
-        //header("Content-Range", "items 0-100/100")
-        // TODO X-Total-Count value hardcoded on every request
-        header("X-Total-Count", "100")
-        //header("Access-Control-Allow-Origin", "http://localhost:3000")
-        //header("Access-Control-Allow-Headers", "*")
-        /*header("Access-Control-Allow-Methods", "GET, POST")
-        header("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization")
-        header("Access-Control-Allow-Credentials", "true")
-        header("Access-Control-Allow-Headers", "X-Requested-With")*/
-    }
-
+    install(DefaultHeaders)
     install(AutoHeadResponse)
 
     // ktor 0.9.5 added MDC support for coroutines and this allows us to print call request id for the entire
@@ -113,28 +117,8 @@ private fun Application.bootstrapRest() {
         }
     }
 
-    // Some frameworks such as Angular require additional CORS configuration
     install(CORS) {
-        //header("Access-Control-Expose-Headers: Content-Range")
         header("Access-Control-Expose-Headers: X-Total-Count")
-
-        //header("Access-Control-Allow-Origin: *")
-        //header("Access-Control-Allow-Headers: *")
-        //exposeHeader("Content-Range")
-        //header("Access-Control-Expose-Headers: *")
-        //header("Access-Control-Expose-Headers: Content-Range")
-        //header("Access-Control-Allow-Origin: http://localhost:3000")
-        //allowCredentials = true
-        //method(HttpMethod.Options)
-        //method(HttpMethod.Put)
-        //method(HttpMethod.Delete)
-        //method(HttpMethod.Get)
-        //method(HttpMethod.Post)
-        //header("*")
-        //header("Access-Control-Allow-Origin: *")
-        //header("Access-Control-Allow-Methods: GET, POST")
-        //allowSameOrigin = true
-        //anyHost()
     }
 
     // Content conversions - here we setup serialization and deserialization of JSON objects
@@ -186,6 +170,12 @@ private fun Application.bootstrapRest() {
             productRoute()
             // api/v1/users
             userRoute()
+            // api/v1/colors
+            colorRoute()
+            // api/v1/prices
+            priceRoute()
+            // api/v1/stock
+            stockRoute()
         }
     }
 }

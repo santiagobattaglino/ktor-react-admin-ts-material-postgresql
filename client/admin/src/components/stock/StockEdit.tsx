@@ -1,9 +1,9 @@
 import React from 'react'
-import { Create, SimpleForm, TextInput, AutocompleteInput } from 'react-admin'
+import { Edit, SimpleForm, TextInput, AutocompleteInput } from 'react-admin'
 
-const UserCreate = (props: any) => {
+const StockEdit = (props: any) => {
     return (
-        <Create title='Nuevo Usuario' {...props}>
+        <Edit title='Editar Producto' {...props}>
             <SimpleForm redirect="list">
                 <TextInput source='firstName' label='Nombre' autoFocus />
                 <AutocompleteInput source="role" choices={[
@@ -13,8 +13,8 @@ const UserCreate = (props: any) => {
                     { id: 'VENDEDOR', name: 'VENDEDOR' },
                 ]} />
             </SimpleForm>
-        </Create>
+        </Edit>
     )
 }
 
-export default UserCreate
+export default StockEdit

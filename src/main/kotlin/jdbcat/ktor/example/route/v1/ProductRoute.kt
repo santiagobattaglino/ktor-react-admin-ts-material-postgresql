@@ -3,6 +3,7 @@ package jdbcat.ktor.example.route.v1
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
+import io.ktor.response.header
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.delete
@@ -35,6 +36,7 @@ fun Route.productRoute() {
                     .selectAll()
                     .map { ProductResponse.fromEntity(it) }
                     .toList()
+                call.response.header("X-Total-Count", productsResponse.size)
                 call.respond(productsResponse)
             }
         }

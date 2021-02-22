@@ -1,7 +1,7 @@
 import React from 'react'
 import { Create, SimpleForm, TextInput, AutocompleteInput } from 'react-admin'
 
-const UserCreate = (props: any) => {
+const StockCreate = (props: any) => {
     return (
         <Create title='Nuevo Usuario' {...props}>
             <SimpleForm redirect="list">
@@ -17,4 +17,4 @@ const UserCreate = (props: any) => {
     )
 }
 
-export default UserCreate
+export default StockCreate

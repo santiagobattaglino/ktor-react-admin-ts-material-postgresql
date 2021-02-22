@@ -10,11 +10,11 @@ const ProdCreate = (props: any) => {
                 </ReferenceInput>
                 <TextInput source='name' label='Nombre' autoFocus />
                 <TextInput source='material' label='Material' />
-                <TextInput source='color' label='Color' />
-                <TextInput source='idMl' label='idMl' />
-                <ReferenceInput label="Precio" source="priceId" reference="api/v1/prices">
+                <ReferenceInput label="Color/Estampa" source="colorId" reference="api/v1/colors">
                     <SelectInput optionText="name" />
                 </ReferenceInput>
+                <TextInput source='idMl' label='idMl' />
+                <TextInput source='manufacturingCost' label='manufacturingCost' />
                 <TextInput source='notes' label='Notas' />
             </SimpleForm>
         </Create>

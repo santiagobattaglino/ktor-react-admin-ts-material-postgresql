@@ -12,29 +12,31 @@ import io.ktor.routing.post
 import io.ktor.routing.put
 import io.ktor.routing.route
 import jdbcat.core.tx
-import jdbcat.ktor.example.db.dao.UserDao
-import jdbcat.ktor.example.route.v1.model.CreateUserRequest
-import jdbcat.ktor.example.route.v1.model.EditUserRequest
-import jdbcat.ktor.example.route.v1.model.UserResponse
+import jdbcat.ktor.example.db.dao.PriceDao
+import jdbcat.ktor.example.db.model.Price
+import jdbcat.ktor.example.route.v1.model.CreatePriceRequest
+import jdbcat.ktor.example.route.v1.model.EditPriceRequest
+import jdbcat.ktor.example.route.v1.model.PriceResponse
 import mu.KotlinLogging
 import org.koin.ktor.ext.inject
 import javax.sql.DataSource
 
 private val logger = KotlinLogging.logger { }
 
-fun Route.userRoute() {
+fun Route.priceRoute() {
 
     val ds by inject<DataSource>()
-    val dao by inject<UserDao>()
+    val dao by inject<PriceDao>()
 
-    route("/users") {
+    route("/prices") {
 
         // get all
         get("/") { _ ->
             ds.tx { _ ->
+                val price = 10
                 val response = dao
                     .selectAll()
-                    .map { UserResponse.fromEntity(it) }
+                    .map { PriceResponse.fromEntity(it, getManufacturingCost(it)) }
                     .toList()
                 call.response.header("X-Total-Count", response.size)
                 call.respond(response)
@@ -47,19 +49,19 @@ fun Route.userRoute() {
             ds.tx {
                 val response = dao
                     .select(id = id)
-                    .let { UserResponse.fromEntity(it) }
+                    .let { PriceResponse.fromEntity(it, getManufacturingCost(it)) }
                 call.respond(response)
             }
         }
 
         // post insert
         post("/") {
-            val request = call.receive<CreateUserRequest>()
+            val request = call.receive<CreatePriceRequest>()
             val itemToInsert = request.toEntity()
             ds.tx {
                 val response = dao
                     .insert(item = itemToInsert)
-                    .let { UserResponse.fromEntity(it) }
+                    .let { PriceResponse.fromEntity(it, getManufacturingCost(it)) }
                 call.respond(response)
             }
         }
@@ -67,12 +69,12 @@ fun Route.userRoute() {
         // put update
         put("/{id}") {
             val id = call.parameters["id"]!!.toInt()
-            val request = call.receive<EditUserRequest>()
+            val request = call.receive<EditPriceRequest>()
             val itemToUpdate = request.toEntity(id = id)
             ds.tx {
                 val response = dao
                     .update(item = itemToUpdate)
-                    .let { UserResponse.fromEntity(it) }
+                    .let { PriceResponse.fromEntity(it, getManufacturingCost(it)) }
                 call.respond(response)
             }
         }
@@ -85,4 +87,8 @@ fun Route.userRoute() {
             call.respond(HttpStatusCode.NoContent)
         }
     }
+}
+
+fun getManufacturingCost(price: Price): Int {
+    return price.manoDeObra * 2
 }
