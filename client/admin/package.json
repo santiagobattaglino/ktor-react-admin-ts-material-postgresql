@@ -30,9 +30,11 @@
   },
   "scripts": {
     "server": "cd ../../ && ./gradlew run",
+    "server-heroku": "java -jar ../../build/libs/jdbcat-ktor-backend.jar",
     "test-server": "cd ../../ && ./gradlew test",
     "client": "npm run start",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "dev-heroku": "concurrently \"npm run server-heroku\" \"npm run client\"",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

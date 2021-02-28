@@ -1,1 +1,1 @@
-web: java -jar build/libs/jdbcat-ktor-backend.jar
+all: cd client/admin && npm run dev-heroku
