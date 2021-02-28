@@ -13,6 +13,7 @@ import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
 import io.ktor.features.StatusPages
 import io.ktor.features.callIdMdc
+import io.ktor.http.HttpMethod
 import io.ktor.http.content.default
 import io.ktor.http.content.files
 import io.ktor.http.content.static
@@ -126,6 +127,14 @@ private fun Application.bootstrapRest() {
 
     install(CORS) {
         header("Access-Control-Expose-Headers: X-Total-Count")
+        method(HttpMethod.Options)
+        method(HttpMethod.Put)
+        method(HttpMethod.Delete)
+        method(HttpMethod.Post)
+        header("*")
+        allowCredentials = true
+        allowSameOrigin = true
+        anyHost()
     }
 
     // Content conversions - here we setup serialization and deserialization of JSON objects
