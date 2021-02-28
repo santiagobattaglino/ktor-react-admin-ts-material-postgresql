@@ -1,1 +1,1 @@
-all: cd client/admin && npm run dev-heroku
+all: cd client/admin && npm run prod
