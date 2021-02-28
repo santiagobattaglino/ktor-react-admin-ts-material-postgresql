@@ -25,10 +25,10 @@ import StockEdit from './components/stock/StockEdit';
 import StockList from './components/stock/StockList';
 import { Dashboard } from './dashboard';
 
-// https://sleepy-beach-97825.herokuapp.com/static + process.env.PORT || process.env.REACT_APP_PORT || 1260
+// https://sleepy-beach-97825.herokuapp.com + process.env.PORT || process.env.REACT_APP_PORT || 1260
 function App() {
     return (
-        <Admin dashboard={Dashboard} dataProvider={simpleRestProvider('http://localhost:8080', fetchUtils.fetchJson, 'X-Total-Count')}>
+        <Admin dashboard={Dashboard} dataProvider={simpleRestProvider('https://sleepy-beach-97825.herokuapp.com', fetchUtils.fetchJson, 'X-Total-Count')}>
             <Resource
                 name='api/v1/departments'
                 options={{ label: 'Departamentos' }}
