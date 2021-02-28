@@ -27,7 +27,7 @@ import { Dashboard } from './dashboard';
 
 function App() {
     return (
-        <Admin dashboard={Dashboard} dataProvider={simpleRestProvider('http://localhost:3000', fetchUtils.fetchJson, 'X-Total-Count')}>
+        <Admin dashboard={Dashboard} dataProvider={simpleRestProvider('http://localhost:8080', fetchUtils.fetchJson, 'X-Total-Count')}>
             <Resource
                 name='api/v1/departments'
                 options={{ label: 'Departamentos' }}

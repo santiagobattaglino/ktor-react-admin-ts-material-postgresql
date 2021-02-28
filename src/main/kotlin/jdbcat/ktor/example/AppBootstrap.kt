@@ -13,6 +13,10 @@ import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
 import io.ktor.features.StatusPages
 import io.ktor.features.callIdMdc
+import io.ktor.http.content.default
+import io.ktor.http.content.files
+import io.ktor.http.content.static
+import io.ktor.http.content.staticRootFolder
 import io.ktor.jackson.jackson
 import io.ktor.response.respond
 import io.ktor.routing.route
@@ -41,6 +45,7 @@ import jdbcat.ktor.example.route.v1.userRoute
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.koin.ktor.ext.inject
+import java.io.File
 import java.util.UUID
 import javax.sql.DataSource
 
@@ -150,6 +155,12 @@ private fun Application.bootstrapRest() {
         trace {
             application.log.debug(it.buildText())
             application.log.debug(it.call.request.headers.toMap().toString())
+        }
+
+        static("static") {
+            staticRootFolder = File("static")
+            files("static")
+            default("index.html")
         }
 
         route("/$serviceApiVersionV1") {

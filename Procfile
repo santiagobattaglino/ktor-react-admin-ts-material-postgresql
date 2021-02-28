@@ -1,1 +1,1 @@
-all: cd client/admin && npm run prod
+server: java -jar build/libs/jdbcat-ktor-backend.jar
