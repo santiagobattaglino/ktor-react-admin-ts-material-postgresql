@@ -1,1 +1,1 @@
-server: java -jar build/libs/jdbcat-ktor-backend.jar
+web: java -jar build/libs/jdbcat-ktor-backend.jar
