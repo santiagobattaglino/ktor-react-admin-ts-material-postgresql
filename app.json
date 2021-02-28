@@ -1,0 +1,6 @@
+{
+  "name": "Efimero Ktor",
+  "description": "Ktor, PGSQL, react-admin",
+  "image": "heroku/java",
+  "addons": [ "heroku-postgresql" ]
+}
