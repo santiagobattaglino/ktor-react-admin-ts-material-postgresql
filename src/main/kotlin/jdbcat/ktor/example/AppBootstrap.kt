@@ -19,6 +19,8 @@ import io.ktor.http.content.static
 import io.ktor.http.content.staticRootFolder
 import io.ktor.jackson.jackson
 import io.ktor.response.respond
+import io.ktor.response.respondText
+import io.ktor.routing.get
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.util.toMap
@@ -155,6 +157,10 @@ private fun Application.bootstrapRest() {
         trace {
             application.log.debug(it.buildText())
             application.log.debug(it.call.request.headers.toMap().toString())
+        }
+
+        get("/") {
+            call.respondText("Hello :)")
         }
 
         static("static") {
