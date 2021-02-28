@@ -13,6 +13,7 @@ import jdbcat.core.sqlValues
 import jdbcat.core.txRequired
 import jdbcat.ktor.example.EntityNotFoundException
 import jdbcat.ktor.example.db.model.Stock
+import jdbcat.ktor.example.db.model.StockByUser
 import jdbcat.ktor.example.db.model.StockMovements
 import mu.KotlinLogging
 import javax.sql.DataSource
@@ -78,7 +79,7 @@ class StockDao(private val dataSource: DataSource) {
             .setColumns {
                 it[StockMovements.id] = id
             }
-        logger.debug { "select(): $stmt" }
+        logger.debug { "select($id): $stmt" }
         stmt.executeQuery()
             .singleRowOrNull { Stock.extractFrom(it) }
             ?: throw EntityNotFoundException(errorMessage = "Stock id=$id cannot be found")
@@ -102,6 +103,20 @@ class StockDao(private val dataSource: DataSource) {
                 Stock.extractFrom(it)
             }
         }
+
+    suspend fun selectByUserId(userId: Int) = dataSource.txRequired { connection ->
+        val stmt = selectByUserIdSqlTemplate
+            .prepareStatement(connection)
+            .setColumns {
+                it[StockMovements.userId] = userId
+            }
+        // stmt.setInt(1, userId)
+
+        logger.debug { "selectByUserId($userId): $stmt" }
+        stmt.executeQuery().asSequence().map {
+            StockByUser.extractFrom(it)
+        }
+    }
 
     suspend fun countAll() = dataSource.txRequired { connection ->
         val stmt = countAll.prepareStatement(connection)
@@ -149,6 +164,10 @@ class StockDao(private val dataSource: DataSource) {
 
         private val selectByIdSqlTemplate = sqlTemplate(StockMovements) {
             "SELECT * FROM $tableName WHERE $id = ${id.v}"
+        }
+
+        private val selectByUserIdSqlTemplate = sqlTemplate(StockMovements) {
+            "SELECT $productId, SUM($quantity) AS ${quantity.name} FROM $tableName WHERE $userId = ${userId.v} GROUP BY $productId ORDER BY $productId"
         }
 
         private val selectAllSqlTemplate = sqlTemplate(StockMovements) {

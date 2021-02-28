@@ -38,10 +38,10 @@ object ProductsRouteTest : AppSpek({
                         val list =
                             jacksonMapper.readValue<List<ProductResponse>>(response.content!!)
                         list.size `should equal` 2
-                        //val response1 = list.find { it.id == employee1.id }!!
-                        //response1 sameAs employee1
-                        //val response2 = list.find { it.id == employee2.id }!!
-                        //response2 sameAs employee2
+                        // val response1 = list.find { it.id == employee1.id }!!
+                        // response1 sameAs employee1
+                        // val response2 = list.find { it.id == employee2.id }!!
+                        // response2 sameAs employee2
                     }
                 }
             }

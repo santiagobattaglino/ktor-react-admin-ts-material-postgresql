@@ -59,7 +59,7 @@ fun Route.departmentRoute() {
         // POST Insert Department
         post("/") {
             val departmentRequest = call.receive<AddOrUpdateDepartmentRequest>()
-            //val code = call.parameters["code"]!!
+            // val code = call.parameters["code"]!!
             val departmentToAddOrUpdate = departmentRequest.toEntity(code = departmentRequest.id)
             dataSource.tx {
                 val departmentResponse = departmentDao

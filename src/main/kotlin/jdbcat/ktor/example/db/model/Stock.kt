@@ -52,3 +52,20 @@ data class Stock(
         )
     }
 }
+
+data class StockByUser(
+    val productId: Int,
+    val quantity: Int
+) {
+    fun copyValuesTo(builder: ColumnValueBuilder) {
+        builder[StockMovements.productId] = productId
+        builder[StockMovements.quantity] = quantity
+    }
+
+    companion object {
+        fun extractFrom(extractor: ColumnValueExtractor) = StockByUser(
+            productId = extractor[StockMovements.productId],
+            quantity = extractor[StockMovements.quantity]
+        )
+    }
+}

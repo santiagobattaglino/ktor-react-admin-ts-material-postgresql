@@ -75,14 +75,14 @@ private fun Application.bootstrapDatabase() = runBlocking {
     dataSource.tx {
 
         // Drop tables (optional, we need to drop tables to re create them when the db schema is modified)
-        //employeeDao.dropTableIfExists()
-        //departmentDao.dropTableIfExists()
-        //categoryDao.dropTableIfExists()
-        //productDao.dropTableIfExists()
-        //userDao.dropTableIfExists()
-        //colorDao.dropTableIfExists()
-        //priceDao.dropTableIfExists()
-        //stockDao.dropTableIfExists()
+        // employeeDao.dropTableIfExists()
+        // departmentDao.dropTableIfExists()
+        // categoryDao.dropTableIfExists()
+        // productDao.dropTableIfExists()
+        // userDao.dropTableIfExists()
+        // colorDao.dropTableIfExists()
+        // priceDao.dropTableIfExists()
+        // stockDao.dropTableIfExists()
 
         // Create tables
         departmentDao.createTableIfNotExists()

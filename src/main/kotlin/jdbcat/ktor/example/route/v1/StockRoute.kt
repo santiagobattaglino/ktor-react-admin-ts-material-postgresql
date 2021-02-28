@@ -19,6 +19,7 @@ import jdbcat.ktor.example.db.model.Filter
 import jdbcat.ktor.example.route.v1.model.CreateStockRequest
 import jdbcat.ktor.example.route.v1.model.EditStockRequest
 import jdbcat.ktor.example.route.v1.model.StockResponse
+import jdbcat.ktor.example.route.v1.model.StockUserResponse
 import mu.KotlinLogging
 import org.koin.ktor.ext.inject
 import javax.sql.DataSource
@@ -62,6 +63,18 @@ fun Route.stockRoute() {
                     .select(id = id)
                     .let { StockResponse.fromEntity(it) }
                 call.respond(stockResponse)
+            }
+        }
+
+        // get by id
+        get("/user/{userId}") { _ ->
+            val userId = call.parameters["userId"]!!.toInt()
+            dataSource.tx {
+                val response = stockDao
+                    .selectByUserId(userId = userId)
+                    .map { StockUserResponse.fromEntity(it) }
+                    .toList()
+                call.respond(response)
             }
         }
 

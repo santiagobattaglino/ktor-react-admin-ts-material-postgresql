@@ -21,10 +21,10 @@ private val logger = KotlinLogging.logger { }
 @Suppress("unused")
 fun Application.main() {
 
-    environment.monitor.subscribe(ApplicationStarted){
+    environment.monitor.subscribe(ApplicationStarted) {
         println("ApplicationStarted")
     }
-    environment.monitor.subscribe(ApplicationStopped){
+    environment.monitor.subscribe(ApplicationStopped) {
         println("ApplicationStopped")
     }
 

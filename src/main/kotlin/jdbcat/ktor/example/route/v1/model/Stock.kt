@@ -2,6 +2,7 @@ package jdbcat.ktor.example.route.v1.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import jdbcat.ktor.example.db.model.Stock
+import jdbcat.ktor.example.db.model.StockByUser
 import java.util.Date
 
 data class CreateStockRequest(
@@ -61,6 +62,19 @@ data class StockResponse(
                 userId = entity.userId,
                 notes = entity.notes,
                 dateCreated = entity.dateCreated
+            )
+    }
+}
+
+data class StockUserResponse(
+    val productId: Int,
+    val quantity: Int
+) {
+    companion object {
+        fun fromEntity(entity: StockByUser) =
+            StockUserResponse(
+                productId = entity.productId,
+                quantity = entity.quantity
             )
     }
 }
