@@ -66,7 +66,7 @@ fun Route.stockRoute() {
             }
         }
 
-        // get by id
+        // get by userId
         get("/user/{userId}") { _ ->
             val userId = call.parameters["userId"]!!.toInt()
             dataSource.tx {
@@ -74,6 +74,7 @@ fun Route.stockRoute() {
                     .selectByUserId(userId = userId)
                     .map { StockUserResponse.fromEntity(it) }
                     .toList()
+                call.response.header("X-Total-Count", response.size)
                 call.respond(response)
             }
         }

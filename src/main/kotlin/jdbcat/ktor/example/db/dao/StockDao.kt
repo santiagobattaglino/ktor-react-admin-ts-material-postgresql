@@ -167,7 +167,7 @@ class StockDao(private val dataSource: DataSource) {
         }
 
         private val selectByUserIdSqlTemplate = sqlTemplate(StockMovements) {
-            "SELECT $productId, SUM($quantity) AS ${quantity.name} FROM $tableName WHERE $userId = ${userId.v} GROUP BY $productId ORDER BY $productId"
+            "SELECT MAX($id) AS ${id.name}, $productId, SUM($quantity) AS ${quantity.name} FROM $tableName WHERE $userId = ${userId.v} GROUP BY $productId ORDER BY $productId"
         }
 
         private val selectAllSqlTemplate = sqlTemplate(StockMovements) {

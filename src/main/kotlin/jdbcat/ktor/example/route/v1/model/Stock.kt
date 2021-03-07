@@ -67,12 +67,14 @@ data class StockResponse(
 }
 
 data class StockUserResponse(
+    val id: Int,
     val productId: Int,
     val quantity: Int
 ) {
     companion object {
         fun fromEntity(entity: StockByUser) =
             StockUserResponse(
+                id = entity.id,
                 productId = entity.productId,
                 quantity = entity.quantity
             )

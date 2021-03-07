@@ -1,6 +1,6 @@
 import './App.css';
 import React from 'react'
-import { Admin, Resource, fetchUtils } from 'react-admin'
+import {Admin, fetchUtils, Resource} from 'react-admin'
 import simpleRestProvider from 'ra-data-simple-rest';
 import PostCreate from "./components/post/PostCreate";
 import PostList from "./components/post/PostList";
@@ -23,29 +23,30 @@ import PriceList from './components/price/PriceList';
 import StockCreate from './components/stock/StockCreate';
 import StockEdit from './components/stock/StockEdit';
 import StockList from './components/stock/StockList';
-import { Dashboard } from './dashboard';
+import {Dashboard} from './dashboard';
 
-// https://sleepy-beach-97825.herokuapp.com + process.env.PORT || process.env.REACT_APP_PORT || 1260
+// TODO change endpoint for every env https://sleepy-beach-97825.herokuapp.com + process.env.PORT || process.env.REACT_APP_PORT || 3000
 function App() {
     return (
-        <Admin dashboard={Dashboard} dataProvider={simpleRestProvider('http://localhost:8080', fetchUtils.fetchJson, 'X-Total-Count')}>
+        <Admin dashboard={Dashboard}
+               dataProvider={simpleRestProvider('http://localhost:3000', fetchUtils.fetchJson, 'X-Total-Count')}>
             <Resource
                 name='api/v1/departments'
-                options={{ label: 'Departamentos' }}
+                options={{label: 'Departamentos'}}
                 list={PostList}
                 create={PostCreate}
                 edit={PostEdit}
             />
             <Resource
                 name='api/v1/categories'
-                options={{ label: 'Categorías' }}
+                options={{label: 'Categorías'}}
                 list={CatList}
                 create={CatCreate}
                 edit={CatEdit}
             />
             <Resource
                 name='api/v1/products'
-                options={{ label: 'Productos' }}
+                options={{label: 'Productos'}}
                 list={ProdList}
                 create={ProdCreate}
                 edit={ProdEdit}
