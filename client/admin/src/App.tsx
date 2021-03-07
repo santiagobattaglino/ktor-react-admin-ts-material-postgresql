@@ -26,17 +26,10 @@ import StockList from './components/stock/StockList';
 import {Dashboard} from './dashboard';
 
 // TODO change endpoint for every env https://sleepy-beach-97825.herokuapp.com + process.env.PORT || process.env.REACT_APP_PORT || 3000
+// removing dashboard for now. dashboard={Dashboard}
 function App() {
     return (
-        <Admin dashboard={Dashboard}
-               dataProvider={simpleRestProvider('http://localhost:3000', fetchUtils.fetchJson, 'X-Total-Count')}>
-            <Resource
-                name='api/v1/departments'
-                options={{label: 'Departamentos'}}
-                list={PostList}
-                create={PostCreate}
-                edit={PostEdit}
-            />
+        <Admin dataProvider={simpleRestProvider('http://localhost:3000', fetchUtils.fetchJson, 'X-Total-Count')}>
             <Resource
                 name='api/v1/categories'
                 options={{label: 'Categorías'}}

@@ -3,7 +3,7 @@ package jdbcat.ktor.example.route.v1.model
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import jdbcat.ktor.example.db.model.Stock
 import jdbcat.ktor.example.db.model.StockByUser
-import java.util.Date
+import java.util.*
 
 data class CreateStockRequest(
     val productId: Int,
@@ -80,3 +80,8 @@ data class StockUserResponse(
             )
     }
 }
+
+data class StockDashboard(
+        val data: List<StockUserResponse>,
+        val total: Int
+)

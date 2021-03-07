@@ -2,24 +2,15 @@ package jdbcat.ktor.example.route.v1
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.application.call
-import io.ktor.http.HttpStatusCode
-import io.ktor.request.receive
-import io.ktor.response.header
-import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.routing.delete
-import io.ktor.routing.get
-import io.ktor.routing.post
-import io.ktor.routing.put
-import io.ktor.routing.route
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.request.*
+import io.ktor.response.*
+import io.ktor.routing.*
 import jdbcat.core.tx
 import jdbcat.ktor.example.db.dao.StockDao
 import jdbcat.ktor.example.db.model.Filter
-import jdbcat.ktor.example.route.v1.model.CreateStockRequest
-import jdbcat.ktor.example.route.v1.model.EditStockRequest
-import jdbcat.ktor.example.route.v1.model.StockResponse
-import jdbcat.ktor.example.route.v1.model.StockUserResponse
+import jdbcat.ktor.example.route.v1.model.*
 import mu.KotlinLogging
 import org.koin.ktor.ext.inject
 import javax.sql.DataSource
@@ -70,11 +61,17 @@ fun Route.stockRoute() {
         get("/user/{userId}") { _ ->
             val userId = call.parameters["userId"]!!.toInt()
             dataSource.tx {
-                val response = stockDao
-                    .selectByUserId(userId = userId)
-                    .map { StockUserResponse.fromEntity(it) }
-                    .toList()
-                call.response.header("X-Total-Count", response.size)
+                val stockList = stockDao
+                        .selectByUserId(userId = userId)
+                        .map { StockUserResponse.fromEntity(it) }
+                        .toList()
+                call.response.header("X-Total-Count", stockList.size)
+
+                val total = stockList.map {
+                    it.quantity
+                }.sum()
+
+                val response = StockDashboard(stockList, total)
                 call.respond(response)
             }
         }

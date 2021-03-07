@@ -1,5 +1,7 @@
-import React, {CSSProperties, FC,} from 'react';
+import React, {CSSProperties, FC} from 'react';
 import {Loading, useQuery} from 'react-admin';
+import {List, ListItem, ListItemText} from '@material-ui/core';
+import {Link} from 'react-router-dom';
 
 import Welcome from './Welcome';
 
@@ -20,6 +22,11 @@ const Dashboard: FC = () => {
     </div>
 };
 
+interface StockDashboard {
+    stock?: Stock[];
+    total: number;
+}
+
 interface Stock {
     id: number;
     productId: number;
@@ -30,8 +37,8 @@ interface Props {
     stock?: Stock[];
 }
 
-const StockByUser: FC<Props> = ({stock = []}) => {
-    const {data, total, loading, error} = useQuery({
+const StockByUser = (props: any) => {
+    const {data: stockDashboard, total, loading, error} = useQuery({
         type: 'getList',
         resource: 'api/v1/stock/user/2/',
         payload: {pagination: {page: 1, perPage: 10}, sort: {field: 'quantity', order: 'DESC'}}
@@ -43,11 +50,22 @@ const StockByUser: FC<Props> = ({stock = []}) => {
         return <p>ERROR</p>;
     }
 
-    return (<ul>
-        {data.map(item => (
-            <li key={item.id}>{item.quantity}</li>
-        ))}
-    </ul>);
+    return (
+        <div>
+            <p>User Id 2. Total: {total}</p>
+            <List>
+                {stockDashboard
+                    ? stockDashboard.data.map(item => (
+                        <ListItem button to={`api/v1/products/${item.productId}`} component={Link} key={item.id}>
+                            <ListItemText primary={`${item.productId}`}/>
+                            <ListItemText primary={`${item.quantity}`}/>
+                        </ListItem>
+                    ))
+                    : null}
+            </List>
+        </div>
+    );
+
     /*return (
         <Card className="card">
             <CardHeader title={'pos.dashboard.pending_orders'} />

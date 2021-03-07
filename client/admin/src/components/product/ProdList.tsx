@@ -3,7 +3,7 @@ import { Datagrid, DeleteButton, EditButton, List, TextField, ReferenceField } f
 
 const ProdList = (props: any) => {
     return (
-        <List title="Productos" {...props} perPage={25} pagination={false}>
+        <List title="Productos" {...props} perPage={25}>
             <Datagrid>
                 <ReferenceField label="Categoría" source="catId" reference="api/v1/categories" sortBy="name">
                     <TextField source="name" />
