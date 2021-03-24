@@ -1,16 +1,6 @@
 package jdbcat.ktor.example.db.dao
 
-import jdbcat.core.EphemeralTable
-import jdbcat.core.asSequence
-import jdbcat.core.integer
-import jdbcat.core.singleRow
-import jdbcat.core.singleRowOrNull
-import jdbcat.core.sqlAssignNamesToValues
-import jdbcat.core.sqlDefinitions
-import jdbcat.core.sqlNames
-import jdbcat.core.sqlTemplate
-import jdbcat.core.sqlValues
-import jdbcat.core.txRequired
+import jdbcat.core.*
 import jdbcat.ktor.example.EntityNotFoundException
 import jdbcat.ktor.example.db.model.Product
 import jdbcat.ktor.example.db.model.Products
@@ -35,13 +25,13 @@ class ProductDao(private val dataSource: DataSource) {
 
     suspend fun insert(item: Product) = dataSource.txRequired { connection ->
         val stmt = insertSqlTemplate
-            .prepareStatement(
-                connection = connection,
-                returningColumnsOnUpdate = listOf(Products.id)
-            )
-            .setColumns {
-                item.copyValuesTo(it)
-            }
+                .prepareStatement(
+                        connection = connection,
+                        returningColumnsOnUpdate = listOf(Products.id)
+                )
+                .setColumns {
+                    item.copyValuesTo(it)
+                }
         logger.debug { "insert(): $stmt" }
         try {
             stmt.executeUpdate()
@@ -54,18 +44,18 @@ class ProductDao(private val dataSource: DataSource) {
 
     suspend fun update(item: Product) = dataSource.txRequired { connection ->
         val stmt = updateSqlTemplate
-            .prepareStatement(
-                connection = connection,
-                returningColumnsOnUpdate = listOf(Products.id, Products.dateCreated)
-            )
-            .setColumns {
-                item.copyValuesTo(it)
-            }
+                .prepareStatement(
+                        connection = connection,
+                        returningColumnsOnUpdate = listOf(Products.id, Products.dateCreated)
+                )
+                .setColumns {
+                    item.copyValuesTo(it)
+                }
         logger.debug { "update(): $stmt" }
         if (stmt.executeUpdate() == 0) {
             throw EntityNotFoundException(
-                errorMessage = "Entity Product id=${item.id} " +
-                    "was not found and cannot be updated"
+                    errorMessage = "Entity Product id=${item.id} " +
+                            "was not found and cannot be updated"
             )
         }
         val dateCreated = stmt.generatedKeys.singleRow { it[Products.dateCreated] }
@@ -74,14 +64,14 @@ class ProductDao(private val dataSource: DataSource) {
 
     suspend fun select(id: Int) = dataSource.txRequired { connection ->
         val stmt = selectByIdSqlTemplate
-            .prepareStatement(connection)
-            .setColumns {
-                it[Products.id] = id
-            }
+                .prepareStatement(connection)
+                .setColumns {
+                    it[Products.id] = id
+                }
         logger.debug { "selectById(): $stmt" }
         stmt.executeQuery()
-            .singleRowOrNull { Product.extractFrom(it) }
-            ?: throw EntityNotFoundException(errorMessage = "Product id=$id cannot be found")
+                .singleRowOrNull { Product.extractFrom(it) }
+                ?: throw EntityNotFoundException(errorMessage = "Product id=$id cannot be found")
     }
 
     suspend fun selectAll() = dataSource.txRequired { connection ->
@@ -100,10 +90,10 @@ class ProductDao(private val dataSource: DataSource) {
 
     suspend fun delete(id: Int) = dataSource.txRequired { connection ->
         val stmt = deleteById
-            .prepareStatement(connection)
-            .setColumns {
-                it[Products.id] = id
-            }
+                .prepareStatement(connection)
+                .setColumns {
+                    it[Products.id] = id
+                }
         logger.debug { "deleteById(): $stmt" }
         if (stmt.executeUpdate() == 0) {
             throw EntityNotFoundException("Product id=$id does not exist")
@@ -131,17 +121,29 @@ class ProductDao(private val dataSource: DataSource) {
         private val updateSqlTemplate = sqlTemplate(Products) {
             """
             | UPDATE $tableName
-            |   SET ${(columns - id - dateCreated).sqlAssignNamesToValues}
+            |   SET ${(columns - id - dateCreated - categoryName - colorName).sqlAssignNamesToValues}
             |   WHERE $id = ${id.v}
             """
         }
 
         private val selectByIdSqlTemplate = sqlTemplate(Products) {
-            "SELECT * FROM $tableName WHERE $id = ${id.v}"
+            """
+            | SELECT products.*, categories.name AS category, colors.name AS color
+            |   FROM $tableName 
+            |   LEFT JOIN categories ON products.cat_id = categories.id
+            |   LEFT JOIN colors ON products.color_id = colors.id
+            |   WHERE products.id = ${id.v}
+            """
         }
 
         private val selectAllSqlTemplate = sqlTemplate(Products) {
-            "SELECT * FROM $tableName ORDER BY $name"
+            """
+            | SELECT products.*, categories.name AS category_name, colors.name AS color_name
+            |   FROM $tableName 
+            |   LEFT JOIN categories ON products.cat_id = categories.id
+            |   LEFT JOIN colors ON products.color_id = colors.id
+            |   ORDER BY $id
+            """
         }
 
         private val deleteById = sqlTemplate(Products) {

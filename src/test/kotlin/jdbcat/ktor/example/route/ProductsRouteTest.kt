@@ -1,11 +1,8 @@
 package jdbcat.ktor.example.route
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.testing.handleRequest
+import io.ktor.http.*
+import io.ktor.server.testing.*
 import jdbcat.core.tx
 import jdbcat.ktor.example.AppSpek
 import jdbcat.ktor.example.db.dao.ProductDao
@@ -14,7 +11,7 @@ import jdbcat.ktor.example.route.v1.model.ProductResponse
 import org.amshove.kluent.`should equal`
 import org.koin.ktor.ext.inject
 import org.spekframework.spek2.style.specification.describe
-import java.util.Date
+import java.util.*
 import javax.sql.DataSource
 
 // TODO write tests like Employees for Products
@@ -36,7 +33,7 @@ object ProductsRouteTest : AppSpek({
                     }.apply {
                         response.status() `should equal` HttpStatusCode.OK
                         val list =
-                            jacksonMapper.readValue<List<ProductResponse>>(response.content!!)
+                                jacksonMapper.readValue<List<ProductResponse>>(response.content!!)
                         list.size `should equal` 2
                         // val response1 = list.find { it.id == employee1.id }!!
                         // response1 sameAs employee1
@@ -50,14 +47,16 @@ object ProductsRouteTest : AppSpek({
 })
 
 fun newProduct(name: String) = Product(
-    id = null,
-    catId = 1,
-    name = name,
-    material = "material",
-    colorId = 1,
-    manufacturingCost = 1,
-    priceId = 1,
-    notes = "notes",
-    idMl = null,
-    dateCreated = Date()
+        id = null,
+        catId = 1,
+        name = name,
+        material = "material",
+        colorId = 1,
+        manufacturingCost = 1,
+        priceId = 1,
+        notes = "notes",
+        idMl = null,
+        dateCreated = Date(),
+        categoryName = null,
+        colorName = null
 )

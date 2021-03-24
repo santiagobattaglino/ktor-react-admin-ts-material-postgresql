@@ -5,6 +5,7 @@ const ProdList = (props: any) => {
     return (
         <List title="Productos" {...props} perPage={25}>
             <Datagrid>
+                <TextField source='id' label='SKU' />
                 <ReferenceField label="Categoría" source="catId" reference="api/v1/categories" sortBy="name">
                     <TextField source="name" />
                 </ReferenceField>

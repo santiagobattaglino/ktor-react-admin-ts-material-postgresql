@@ -1,16 +1,6 @@
 package jdbcat.ktor.example.db.dao
 
-import jdbcat.core.EphemeralTable
-import jdbcat.core.asSequence
-import jdbcat.core.integer
-import jdbcat.core.singleRow
-import jdbcat.core.singleRowOrNull
-import jdbcat.core.sqlAssignNamesToValues
-import jdbcat.core.sqlDefinitions
-import jdbcat.core.sqlNames
-import jdbcat.core.sqlTemplate
-import jdbcat.core.sqlValues
-import jdbcat.core.txRequired
+import jdbcat.core.*
 import jdbcat.ktor.example.EntityNotFoundException
 import jdbcat.ktor.example.db.model.Stock
 import jdbcat.ktor.example.db.model.StockByUser
@@ -36,13 +26,14 @@ class StockDao(private val dataSource: DataSource) {
 
     suspend fun insert(item: Stock) = dataSource.txRequired { connection ->
         val stmt = insertSqlTemplate
-            .prepareStatement(
-                connection = connection,
-                returningColumnsOnUpdate = listOf(StockMovements.id)
-            )
-            .setColumns {
-                item.copyValuesTo(it)
-            }
+                .prepareStatement(
+                        connection = connection,
+                        returningColumnsOnUpdate = listOf(StockMovements.id)
+                )
+                .setColumns {
+                    item.copyValuesTo(it)
+                }
+        // TODO cuando item.quantity < 0, crear un movimiento de stock con userId = showroom capilla
         logger.debug { "insert(): $stmt" }
         try {
             stmt.executeUpdate()
@@ -55,18 +46,18 @@ class StockDao(private val dataSource: DataSource) {
 
     suspend fun update(item: Stock) = dataSource.txRequired { connection ->
         val stmt = updateSqlTemplate
-            .prepareStatement(
-                connection = connection,
-                returningColumnsOnUpdate = listOf(StockMovements.id, StockMovements.dateCreated)
-            )
-            .setColumns {
-                item.copyValuesTo(it)
-            }
+                .prepareStatement(
+                        connection = connection,
+                        returningColumnsOnUpdate = listOf(StockMovements.id, StockMovements.dateCreated)
+                )
+                .setColumns {
+                    item.copyValuesTo(it)
+                }
         logger.debug { "update(): $stmt" }
         if (stmt.executeUpdate() == 0) {
             throw EntityNotFoundException(
-                errorMessage = "Entity Stock id=${item.id} " +
-                    "was not found and cannot be updated"
+                    errorMessage = "Entity Stock id=${item.id} " +
+                            "was not found and cannot be updated"
             )
         }
         val dateCreated = stmt.generatedKeys.singleRow { it[StockMovements.dateCreated] }
@@ -75,41 +66,41 @@ class StockDao(private val dataSource: DataSource) {
 
     suspend fun select(id: Int) = dataSource.txRequired { connection ->
         val stmt = selectByIdSqlTemplate
-            .prepareStatement(connection)
-            .setColumns {
-                it[StockMovements.id] = id
-            }
+                .prepareStatement(connection)
+                .setColumns {
+                    it[StockMovements.id] = id
+                }
         logger.debug { "select($id): $stmt" }
         stmt.executeQuery()
-            .singleRowOrNull { Stock.extractFrom(it) }
-            ?: throw EntityNotFoundException(errorMessage = "Stock id=$id cannot be found")
+                .singleRowOrNull { Stock.extractFrom(it) }
+                ?: throw EntityNotFoundException(errorMessage = "Stock id=$id cannot be found")
     }
 
     suspend fun selectAll(range: List<Int>?, sort: List<String>?) =
-        dataSource.txRequired { connection ->
-            val stmt = selectAllSqlTemplate.prepareStatement(connection)
-            range?.let {
-                stmt.setInt(1, it[1] - it[0] + 1) // LIMIT
-                // OFFSET
-                if (it[0] == 0) {
-                    stmt.setInt(2, it[0])
-                } else {
-                    stmt.setInt(2, it[0] + 1)
+            dataSource.txRequired { connection ->
+                val stmt = selectAllSqlTemplate.prepareStatement(connection)
+                range?.let {
+                    stmt.setInt(1, it[1] - it[0] + 1) // LIMIT
+                    // OFFSET
+                    if (it[0] == 0) {
+                        stmt.setInt(2, it[0])
+                    } else {
+                        stmt.setInt(2, it[0] + 1)
+                    }
+                }
+
+                logger.debug { "selectAll(): $stmt" }
+                stmt.executeQuery().asSequence().map {
+                    Stock.extractFrom(it)
                 }
             }
 
-            logger.debug { "selectAll(): $stmt" }
-            stmt.executeQuery().asSequence().map {
-                Stock.extractFrom(it)
-            }
-        }
-
     suspend fun selectByUserId(userId: Int) = dataSource.txRequired { connection ->
         val stmt = selectByUserIdSqlTemplate
-            .prepareStatement(connection)
-            .setColumns {
-                it[StockMovements.userId] = userId
-            }
+                .prepareStatement(connection)
+                .setColumns {
+                    it[StockMovements.userId] = userId
+                }
         // stmt.setInt(1, userId)
 
         logger.debug { "selectByUserId($userId): $stmt" }
@@ -126,10 +117,10 @@ class StockDao(private val dataSource: DataSource) {
 
     suspend fun delete(id: Int) = dataSource.txRequired { connection ->
         val stmt = deleteById
-            .prepareStatement(connection)
-            .setColumns {
-                it[StockMovements.id] = id
-            }
+                .prepareStatement(connection)
+                .setColumns {
+                    it[StockMovements.id] = id
+                }
         logger.debug { "delete(): $stmt" }
         if (stmt.executeUpdate() == 0) {
             throw EntityNotFoundException("Stock id=$id does not exist")
@@ -167,12 +158,26 @@ class StockDao(private val dataSource: DataSource) {
         }
 
         private val selectByUserIdSqlTemplate = sqlTemplate(StockMovements) {
-            "SELECT MAX($id) AS ${id.name}, $productId, SUM($quantity) AS ${quantity.name} FROM $tableName WHERE $userId = ${userId.v} GROUP BY $productId ORDER BY $productId"
+            """
+            | SELECT MAX($id) AS ${id.name}, $productId, SUM(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) AS total 
+            |   FROM $tableName 
+            |   WHERE $userId = ${userId.v} 
+            |   GROUP BY $productId 
+            |   ORDER BY $productId
+            """
         }
 
         private val selectAllSqlTemplate = sqlTemplate(StockMovements) {
-            "SELECT * FROM $tableName ORDER BY $productId LIMIT ? OFFSET ?"
+            "SELECT * FROM $tableName ORDER BY $id DESC LIMIT ? OFFSET ?"
         }
+
+        /*select products.*, max(categories.name) as category_name, max(colors.name) as color_name, SUM(stock_movements.quantity) as quantity
+        from products
+        left join categories on products.cat_id = categories.id
+        left join colors on products.color_id = colors.id
+        left join stock_movements on products.id = stock_movements.product_id
+        group by products.id
+        order by products.id*/
 
         private val deleteById = sqlTemplate(StockMovements) {
             "DELETE FROM $tableName WHERE $id = ${id.v}"

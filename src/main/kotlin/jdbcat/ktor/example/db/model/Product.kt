@@ -1,13 +1,9 @@
 package jdbcat.ktor.example.db.model
 
-import jdbcat.core.ColumnValueBuilder
-import jdbcat.core.ColumnValueExtractor
-import jdbcat.core.Table
-import jdbcat.core.integer
-import jdbcat.core.varchar
+import jdbcat.core.*
 import jdbcat.dialects.pg.pgSerial
 import jdbcat.ext.javaDate
-import java.util.Date
+import java.util.*
 
 object Products : Table(tableName = "products") {
     val id = pgSerial("id", specifier = "PRIMARY KEY")
@@ -20,19 +16,25 @@ object Products : Table(tableName = "products") {
     val manufacturingCost = integer("manufacturing_cost").nonnull()
     val notes = varchar("notes", size = 255)
     val dateCreated = javaDate("date_created").nonnull()
+
+    // TODO change to category.id and category.name and test react-admin
+    val categoryName = varchar("category_name", size = 100)
+    val colorName = varchar("color_name", size = 100)
 }
 
 data class Product(
-    val id: Int? = null,
-    val catId: Int,
-    val name: String,
-    val material: String,
-    val colorId: Int,
-    val idMl: Int? = null,
-    val priceId: Int,
-    val manufacturingCost: Int,
-    val notes: String? = null,
-    val dateCreated: Date
+        val id: Int? = null,
+        val catId: Int,
+        val name: String,
+        val material: String,
+        val colorId: Int,
+        val idMl: Int? = null,
+        val priceId: Int,
+        val manufacturingCost: Int,
+        val notes: String? = null,
+        val dateCreated: Date,
+        val categoryName: String?,
+        val colorName: String?
 ) {
     fun copyValuesTo(builder: ColumnValueBuilder) {
         if (id != null) {
@@ -47,20 +49,24 @@ data class Product(
         builder[Products.manufacturingCost] = manufacturingCost
         builder[Products.notes] = notes
         builder[Products.dateCreated] = dateCreated
+        builder[Products.categoryName] = categoryName
+        builder[Products.colorName] = colorName
     }
 
     companion object {
         fun extractFrom(extractor: ColumnValueExtractor) = Product(
-            id = extractor[Products.id],
-            catId = extractor[Products.catId],
-            name = extractor[Products.name],
-            material = extractor[Products.material],
-            colorId = extractor[Products.colorId],
-            idMl = extractor[Products.idMl],
-            priceId = extractor[Products.priceId],
-            manufacturingCost = extractor[Products.manufacturingCost],
-            notes = extractor[Products.notes],
-            dateCreated = extractor[Products.dateCreated]
+                id = extractor[Products.id],
+                catId = extractor[Products.catId],
+                name = extractor[Products.name],
+                material = extractor[Products.material],
+                colorId = extractor[Products.colorId],
+                idMl = extractor[Products.idMl],
+                priceId = extractor[Products.priceId],
+                manufacturingCost = extractor[Products.manufacturingCost],
+                notes = extractor[Products.notes],
+                dateCreated = extractor[Products.dateCreated],
+                categoryName = extractor[Products.categoryName],
+                colorName = extractor[Products.colorName]
         )
     }
 }

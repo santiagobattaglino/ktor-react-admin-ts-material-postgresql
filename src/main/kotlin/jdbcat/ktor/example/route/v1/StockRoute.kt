@@ -10,7 +10,10 @@ import io.ktor.routing.*
 import jdbcat.core.tx
 import jdbcat.ktor.example.db.dao.StockDao
 import jdbcat.ktor.example.db.model.Filter
-import jdbcat.ktor.example.route.v1.model.*
+import jdbcat.ktor.example.route.v1.model.CreateStockRequest
+import jdbcat.ktor.example.route.v1.model.EditStockRequest
+import jdbcat.ktor.example.route.v1.model.StockResponse
+import jdbcat.ktor.example.route.v1.model.StockUserResponse
 import mu.KotlinLogging
 import org.koin.ktor.ext.inject
 import javax.sql.DataSource
@@ -67,12 +70,12 @@ fun Route.stockRoute() {
                         .toList()
                 call.response.header("X-Total-Count", stockList.size)
 
-                val total = stockList.map {
+                /*val total = stockList.map {
                     it.quantity
                 }.sum()
+                val response = StockDashboard(stockList, total)*/
 
-                val response = StockDashboard(stockList, total)
-                call.respond(response)
+                call.respond(stockList)
             }
         }
 

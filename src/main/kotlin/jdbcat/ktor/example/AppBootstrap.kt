@@ -1,55 +1,22 @@
 package jdbcat.ktor.example
 
 import com.fasterxml.jackson.databind.SerializationFeature
-import io.ktor.application.Application
-import io.ktor.application.call
-import io.ktor.application.install
-import io.ktor.application.log
-import io.ktor.features.AutoHeadResponse
-import io.ktor.features.CORS
-import io.ktor.features.CallId
-import io.ktor.features.CallLogging
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.DefaultHeaders
-import io.ktor.features.StatusPages
-import io.ktor.features.callIdMdc
-import io.ktor.http.HttpMethod
-import io.ktor.http.content.default
-import io.ktor.http.content.files
-import io.ktor.http.content.static
-import io.ktor.http.content.staticRootFolder
-import io.ktor.jackson.jackson
-import io.ktor.response.respond
-import io.ktor.response.respondText
-import io.ktor.routing.get
-import io.ktor.routing.route
-import io.ktor.routing.routing
-import io.ktor.util.toMap
+import io.ktor.application.*
+import io.ktor.features.*
+import io.ktor.http.*
+import io.ktor.http.content.*
+import io.ktor.jackson.*
+import io.ktor.response.*
+import io.ktor.routing.*
+import io.ktor.util.*
 import jdbcat.core.tx
-import jdbcat.ktor.example.db.dao.CategoryDao
-import jdbcat.ktor.example.db.dao.ColorDao
-import jdbcat.ktor.example.db.dao.DepartmentDao
-import jdbcat.ktor.example.db.dao.EmployeeDao
-import jdbcat.ktor.example.db.dao.PriceDao
-import jdbcat.ktor.example.db.dao.ProductDao
-import jdbcat.ktor.example.db.dao.StockDao
-import jdbcat.ktor.example.db.dao.UserDao
-import jdbcat.ktor.example.route.v1.adminRoute
-import jdbcat.ktor.example.route.v1.categoryRoute
-import jdbcat.ktor.example.route.v1.colorRoute
-import jdbcat.ktor.example.route.v1.departmentRoute
-import jdbcat.ktor.example.route.v1.employeeRoute
-import jdbcat.ktor.example.route.v1.healthCheckRoute
-import jdbcat.ktor.example.route.v1.priceRoute
-import jdbcat.ktor.example.route.v1.productRoute
-import jdbcat.ktor.example.route.v1.reportRoute
-import jdbcat.ktor.example.route.v1.stockRoute
-import jdbcat.ktor.example.route.v1.userRoute
+import jdbcat.ktor.example.db.dao.*
+import jdbcat.ktor.example.route.v1.*
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.koin.ktor.ext.inject
 import java.io.File
-import java.util.UUID
+import java.util.*
 import javax.sql.DataSource
 
 private val logger = KotlinLogging.logger { }
@@ -131,6 +98,7 @@ private fun Application.bootstrapRest() {
         method(HttpMethod.Put)
         method(HttpMethod.Delete)
         method(HttpMethod.Post)
+        method(HttpMethod.Get)
         header("*")
         allowCredentials = true
         allowSameOrigin = true
