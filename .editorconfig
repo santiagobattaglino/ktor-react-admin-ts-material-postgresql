@@ -1,3 +1,4 @@
 [*.{kt,kts}]
 disabled_rules=no-wildcard-imports
-continuation_indent_size=4
+indent_size=unset
+continuation_indent_size=unset

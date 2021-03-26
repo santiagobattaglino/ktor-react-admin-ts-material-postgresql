@@ -64,8 +64,8 @@ dependencies {
         exclude group: 'org.junit.platform'
         exclude group: 'org.jetbrains.kotlin'
     }
-    
-    ktlint "com.github.shyiko:ktlint:0.29.0"
+
+    ktlint "com.pinterest:ktlint:0.41.0"
 }
 
 // --- Run "./gradle shadowJar" to generate fat jar with all dependencies
@@ -79,7 +79,7 @@ shadowJar {
 task ktlint(type: JavaExec, group: "verification") {
     description = "Check Kotlin code style"
     classpath = configurations.ktlint
-    main = "com.github.shyiko.ktlint.Main"
+    main = "com.pinterest.ktlint.Main"
     args = ["src/**/*.kt"]
     // to generate report in checkstyle format prepend following args:
     // "--reporter=plain", "--reporter=checkstyle,output=${buildDir}/ktlint.xml"
@@ -88,7 +88,7 @@ task ktlint(type: JavaExec, group: "verification") {
 task ktlintFormat(type: JavaExec, group: "formatting") {
     description = "Fix Kotlin code style deviations."
     classpath = configurations.ktlint
-    main = "com.github.shyiko.ktlint.Main"
+    main = "com.pinterest.ktlint.Main"
     args = ["-F", "src/**/*.kt"]
 }
 check.dependsOn ktlint
