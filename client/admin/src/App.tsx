@@ -2,9 +2,6 @@ import './App.css';
 import React from 'react'
 import {Admin, fetchUtils, Resource} from 'react-admin'
 import simpleRestProvider from 'ra-data-simple-rest';
-import PostCreate from "./components/post/PostCreate";
-import PostList from "./components/post/PostList";
-import PostEdit from "./components/post/PostEdit";
 import CatCreate from './components/category/CatCreate';
 import CatList from './components/category/CatList';
 import CatEdit from './components/category/CatEdit';
@@ -23,7 +20,9 @@ import PriceList from './components/price/PriceList';
 import StockCreate from './components/stock/StockCreate';
 import StockEdit from './components/stock/StockEdit';
 import StockList from './components/stock/StockList';
-import {Dashboard} from './dashboard';
+import SaleCreate from './components/sale/SaleCreate';
+import SaleEdit from './components/sale/SaleEdit';
+import SaleList from './components/sale/SaleList';
 
 // TODO change endpoint for every env https://sleepy-beach-97825.herokuapp.com + process.env.PORT || process.env.REACT_APP_PORT || 3000
 // removing dashboard for now. dashboard={Dashboard}
@@ -71,6 +70,13 @@ function App() {
                 list={StockList}
                 create={StockCreate}
                 edit={StockEdit}
+            />
+            <Resource
+                name='api/v1/sales'
+                options={{ label: 'Ventas' }}
+                list={SaleList}
+                create={SaleCreate}
+                edit={SaleEdit}
             />
         </Admin>
     );

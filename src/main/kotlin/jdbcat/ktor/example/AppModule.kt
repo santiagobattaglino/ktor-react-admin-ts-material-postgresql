@@ -1,14 +1,7 @@
 package jdbcat.ktor.example
 
 import com.zaxxer.hikari.HikariDataSource
-import jdbcat.ktor.example.db.dao.CategoryDao
-import jdbcat.ktor.example.db.dao.ColorDao
-import jdbcat.ktor.example.db.dao.DepartmentDao
-import jdbcat.ktor.example.db.dao.EmployeeDao
-import jdbcat.ktor.example.db.dao.PriceDao
-import jdbcat.ktor.example.db.dao.ProductDao
-import jdbcat.ktor.example.db.dao.StockDao
-import jdbcat.ktor.example.db.dao.UserDao
+import jdbcat.ktor.example.db.dao.*
 import jdbcat.ktor.example.service.EmployeeReportService
 import org.koin.dsl.module
 import javax.sql.DataSource
@@ -37,6 +30,7 @@ val appModule = module(createdAtStart = true) {
     single { ColorDao(dataSource = get()) }
     single { PriceDao(dataSource = get()) }
     single { StockDao(dataSource = get()) }
+    single { SaleDao(dataSource = get()) }
 
     // Business logic objects
     single { EmployeeReportService(dataSource = get()) }
