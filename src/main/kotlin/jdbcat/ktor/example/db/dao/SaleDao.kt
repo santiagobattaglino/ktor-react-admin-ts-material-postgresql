@@ -92,7 +92,6 @@ class SaleDao(private val dataSource: DataSource) {
         }
     }
 
-
     suspend fun countAll() = dataSource.txRequired { connection ->
         val stmt = countAll.prepareStatement(connection)
         logger.debug { "countAll(): $stmt" }

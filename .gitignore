@@ -27,6 +27,5 @@ gradle-app.setting
 
 .tmp-files
 
-/static
 /client/admin/package-lock.json
 /client/admin/.vscode
