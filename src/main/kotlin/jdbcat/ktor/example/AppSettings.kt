@@ -18,7 +18,7 @@ class AppSettings(private val config: Config) {
      * or any other .conf files visible to HOCON.
      */
     val hikariMainDatabaseConfig by lazy {
-        val dbConfig = config.getConfig("jdbcat-ktor.main-db.hikari.dev")
+        val dbConfig = config.getConfig("jdbcat-ktor.main-db.hikari.prod")
         HikariConfig(dbConfig.toProperties())
     }
 
