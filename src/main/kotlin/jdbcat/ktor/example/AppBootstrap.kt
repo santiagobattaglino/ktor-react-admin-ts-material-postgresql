@@ -58,7 +58,7 @@ private fun Application.bootstrapDatabase() = runBlocking {
         // userDao.dropTableIfExists()
         // colorDao.dropTableIfExists()
         // priceDao.dropTableIfExists()
-        stockDao.dropTableIfExists()
+        // stockDao.dropTableIfExists()
         // saleDao.dropTableIfExists()
 
         // Create tables
