@@ -56,7 +56,5 @@ fun newProduct(name: String) = Product(
         priceId = 1,
         notes = "notes",
         idMl = null,
-        dateCreated = Date(),
-        categoryName = null,
-        colorName = null
+        dateCreated = Date()
 )
