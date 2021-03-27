@@ -32,7 +32,6 @@ fun Application.main() {
     }
 
     val mainConfig = ConfigFactory.load("main.conf")
-    val env = environment.config.propertyOrNull("ktor.environment")?.getString()
 
     // Add Koin DI support to Ktor
     install(Koin) {

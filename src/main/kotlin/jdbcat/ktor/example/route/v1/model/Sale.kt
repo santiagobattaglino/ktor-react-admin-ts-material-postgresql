@@ -11,8 +11,8 @@ data class CreateSaleRequest(
 ) {
     fun toEntity() = Sale(
             id = null,
-            placeId = placeId,
-            userId = userId,
+            sellerId = placeId,
+            clientId = userId,
             notes = notes,
             dateCreated = Date()
     )
@@ -26,8 +26,8 @@ data class EditSaleRequest(
 ) {
     fun toEntity(id: Int) = Sale(
             id = id,
-            placeId = placeId,
-            userId = userId,
+            sellerId = placeId,
+            clientId = userId,
             notes = notes,
             dateCreated = Date()
     )
@@ -44,8 +44,8 @@ data class SaleResponse(
         fun fromEntity(entity: Sale) =
                 SaleResponse(
                         id = entity.id!!,
-                        placeId = entity.placeId,
-                        userId = entity.userId,
+                        placeId = entity.sellerId,
+                        userId = entity.clientId,
                         notes = entity.notes,
                         dateCreated = entity.dateCreated
                 )

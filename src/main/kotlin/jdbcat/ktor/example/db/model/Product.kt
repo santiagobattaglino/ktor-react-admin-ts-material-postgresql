@@ -16,10 +16,6 @@ object Products : Table(tableName = "products") {
     val manufacturingCost = integer("manufacturing_cost").nonnull()
     val notes = varchar("notes", size = 255)
     val dateCreated = javaDate("date_created").nonnull()
-
-    // TODO change to category.id and category.name and test react-admin
-    val categoryName = varchar("category_name", size = 100)
-    val colorName = varchar("color_name", size = 100)
 }
 
 data class Product(
@@ -32,9 +28,7 @@ data class Product(
         val priceId: Int,
         val manufacturingCost: Int,
         val notes: String? = null,
-        val dateCreated: Date,
-        val categoryName: String?,
-        val colorName: String?
+        val dateCreated: Date
 ) {
     fun copyValuesTo(builder: ColumnValueBuilder) {
         if (id != null) {
@@ -49,8 +43,6 @@ data class Product(
         builder[Products.manufacturingCost] = manufacturingCost
         builder[Products.notes] = notes
         builder[Products.dateCreated] = dateCreated
-        builder[Products.categoryName] = categoryName
-        builder[Products.colorName] = colorName
     }
 
     companion object {
@@ -64,9 +56,7 @@ data class Product(
                 priceId = extractor[Products.priceId],
                 manufacturingCost = extractor[Products.manufacturingCost],
                 notes = extractor[Products.notes],
-                dateCreated = extractor[Products.dateCreated],
-                categoryName = extractor[Products.categoryName],
-                colorName = extractor[Products.colorName]
+                dateCreated = extractor[Products.dateCreated]
         )
     }
 }

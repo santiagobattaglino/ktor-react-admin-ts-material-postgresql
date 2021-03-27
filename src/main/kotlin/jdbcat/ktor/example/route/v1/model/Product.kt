@@ -12,9 +12,7 @@ data class CreateProductRequest(
         val idMl: Int?,
         val priceId: Int,
         val manufacturingCost: Int,
-        val notes: String?,
-        val categoryName: String?,
-        val colorName: String?
+        val notes: String?
 ) {
     // Here we set up the object to be saved
     fun toEntity() = Product(
@@ -27,9 +25,7 @@ data class CreateProductRequest(
             priceId = priceId,
             manufacturingCost = manufacturingCost,
             notes = notes,
-            dateCreated = Date(),
-            categoryName = categoryName,
-            colorName = colorName
+            dateCreated = Date()
     )
 }
 
@@ -42,9 +38,7 @@ data class EditProductRequest(
         val idMl: Int?,
         val priceId: Int,
         val manufacturingCost: Int,
-        val notes: String?,
-        val categoryName: String?,
-        val colorName: String?
+        val notes: String?
 ) {
     fun toEntity(id: Int) = Product(
             id = id,
@@ -56,9 +50,7 @@ data class EditProductRequest(
             priceId = priceId,
             manufacturingCost = manufacturingCost,
             notes = notes,
-            dateCreated = Date(),
-            categoryName = categoryName,
-            colorName = colorName
+            dateCreated = Date()
     )
 }
 
@@ -72,9 +64,7 @@ data class ProductResponse(
         val priceId: Int,
         val manufacturingCost: Int,
         val notes: String?,
-        val dateCreated: Date,
-        val categoryName: String?,
-        val colorName: String?
+        val dateCreated: Date
 ) {
     companion object {
         fun fromEntity(entity: Product) =
@@ -88,9 +78,7 @@ data class ProductResponse(
                         priceId = entity.priceId,
                         manufacturingCost = entity.manufacturingCost,
                         notes = entity.notes,
-                        dateCreated = entity.dateCreated,
-                        categoryName = entity.categoryName,
-                        colorName = entity.colorName
+                        dateCreated = entity.dateCreated
                 )
     }
 }

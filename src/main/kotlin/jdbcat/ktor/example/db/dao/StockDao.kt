@@ -6,6 +6,7 @@ import jdbcat.ktor.example.db.model.Stock
 import jdbcat.ktor.example.db.model.StockByUser
 import jdbcat.ktor.example.db.model.StockMovements
 import mu.KotlinLogging
+import java.sql.SQLException
 import javax.sql.DataSource
 
 class StockDao(private val dataSource: DataSource) {
@@ -37,7 +38,11 @@ class StockDao(private val dataSource: DataSource) {
         logger.debug { "insert(): $stmt" }
         try {
             stmt.executeUpdate()
-        } catch (e: Exception) {
+        } catch (e: SQLException) {
+            /*if (e.hasState(PSQLState.UNIQUE_VIOLATION)) {
+                logger.debug { "insert(): PSQLState.UNIQUE_VIOLATION, updating" }
+                update(item)
+            }*/
             e.printStackTrace()
         }
         val id: Int = stmt.generatedKeys.singleRow { it[StockMovements.id] }

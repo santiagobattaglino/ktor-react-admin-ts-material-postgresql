@@ -6,8 +6,12 @@ const SaleList = (props: any) => {
         <List title="Sales" {...props} perPage={25}>
             <Datagrid>
                 <TextField source='id' label='id' />
-                <TextField source='placeId' label='Lugar de venta' />
-                <TextField source='userId' label='Usuario' />
+                <ReferenceField label="Lugar de Venta / Vendedor" source="sellerId" reference="api/v1/users" sortBy="firstName">
+                    <TextField source="firstName" />
+                </ReferenceField>
+                <ReferenceField label="Cliente" source="clientId" reference="api/v1/users" sortBy="firstName">
+                    <TextField source="firstName" />
+                </ReferenceField>
 
                 <EditButton basePath='sales' undoable={true} />
                 <DeleteButton basePath='sales' undoable={true} />

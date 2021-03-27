@@ -121,27 +121,23 @@ class ProductDao(private val dataSource: DataSource) {
         private val updateSqlTemplate = sqlTemplate(Products) {
             """
             | UPDATE $tableName
-            |   SET ${(columns - id - dateCreated - categoryName - colorName).sqlAssignNamesToValues}
+            |   SET ${(columns - id - dateCreated).sqlAssignNamesToValues}
             |   WHERE $id = ${id.v}
             """
         }
 
         private val selectByIdSqlTemplate = sqlTemplate(Products) {
             """
-            | SELECT products.*, categories.name AS category, colors.name AS color
+            | SELECT *
             |   FROM $tableName 
-            |   LEFT JOIN categories ON products.cat_id = categories.id
-            |   LEFT JOIN colors ON products.color_id = colors.id
             |   WHERE products.id = ${id.v}
             """
         }
 
         private val selectAllSqlTemplate = sqlTemplate(Products) {
             """
-            | SELECT products.*, categories.name AS category_name, colors.name AS color_name
+            | SELECT *
             |   FROM $tableName 
-            |   LEFT JOIN categories ON products.cat_id = categories.id
-            |   LEFT JOIN colors ON products.color_id = colors.id
             |   ORDER BY $id
             """
         }

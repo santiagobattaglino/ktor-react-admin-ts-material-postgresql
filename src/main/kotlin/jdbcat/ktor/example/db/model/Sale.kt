@@ -7,16 +7,16 @@ import java.util.*
 
 object Sales : Table(tableName = "sales") {
     val id = pgSerial("id", specifier = "PRIMARY KEY")
-    val placeId = integer("place_id").nonnull()
-    val userId = integer("user_id").nonnull()
+    val sellerId = integer("seller_id").nonnull()
+    val clientId = integer("client_id").nonnull()
     val notes = varchar("notes", size = 255)
     val dateCreated = javaDate("date_created").nonnull()
 }
 
 data class Sale(
         val id: Int? = null,
-        val placeId: Int,
-        val userId: Int,
+        val sellerId: Int,
+        val clientId: Int,
         val notes: String?,
         val dateCreated: Date
 ) {
@@ -24,8 +24,8 @@ data class Sale(
         if (id != null) {
             builder[Sales.id] = id
         }
-        builder[Sales.placeId] = placeId
-        builder[Sales.userId] = userId
+        builder[Sales.sellerId] = sellerId
+        builder[Sales.clientId] = clientId
         builder[Sales.notes] = notes
         builder[Sales.dateCreated] = dateCreated
     }
@@ -33,8 +33,8 @@ data class Sale(
     companion object {
         fun extractFrom(extractor: ColumnValueExtractor) = Sale(
                 id = extractor[Sales.id],
-                placeId = extractor[Sales.placeId],
-                userId = extractor[Sales.userId],
+                sellerId = extractor[Sales.sellerId],
+                clientId = extractor[Sales.clientId],
                 notes = extractor[Sales.notes],
                 dateCreated = extractor[Sales.dateCreated]
         )
