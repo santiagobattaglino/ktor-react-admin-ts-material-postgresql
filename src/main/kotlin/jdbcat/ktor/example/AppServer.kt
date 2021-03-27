@@ -5,6 +5,8 @@ import io.ktor.application.Application
 import io.ktor.application.ApplicationStarted
 import io.ktor.application.ApplicationStopped
 import io.ktor.application.install
+import io.ktor.server.engine.*
+import io.ktor.util.*
 import mu.KotlinLogging
 import org.koin.Logger.SLF4JLogger
 import org.koin.ktor.ext.Koin
@@ -18,6 +20,7 @@ private val logger = KotlinLogging.logger { }
  * Application's ENTRY POINT.
  * This method is called by Ktor and this entry point is configured in /resources/application.conf
  */
+@KtorExperimentalAPI
 @Suppress("unused")
 fun Application.main() {
 
@@ -29,6 +32,8 @@ fun Application.main() {
     }
 
     val mainConfig = ConfigFactory.load("main.conf")
+    val env = environment.config.propertyOrNull("ktor.environment")?.getString()
+
     // Add Koin DI support to Ktor
     install(Koin) {
         SLF4JLogger()

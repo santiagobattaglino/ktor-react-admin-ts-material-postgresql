@@ -25,8 +25,12 @@ import SaleEdit from './components/sale/SaleEdit';
 import SaleList from './components/sale/SaleList';
 
 function App() {
+    let apiUrl = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_API_URL_DEV : process.env.REACT_APP_API_URL_PROD;
+    if (apiUrl === undefined)
+        apiUrl = 'REACT_APP_API_URL undefined'
+        console.log(apiUrl);
     return (
-        <Admin dataProvider={simpleRestProvider('https://sleepy-beach-97825.herokuapp.com', fetchUtils.fetchJson, 'X-Total-Count')}>
+        <Admin dataProvider={simpleRestProvider(apiUrl, fetchUtils.fetchJson, 'X-Total-Count')}>
             <Resource
                 name='api/v1/categories'
                 options={{label: 'Categorías'}}
