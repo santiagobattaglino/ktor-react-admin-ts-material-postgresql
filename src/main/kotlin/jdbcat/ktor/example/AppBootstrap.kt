@@ -30,8 +30,6 @@ fun Application.bootstrap() {
     bootstrapDatabase()
     // Bootstrap REST
     bootstrapRest()
-
-    logger.info("Some other property value: ${appSettings.someOtherProperty}")
 }
 
 // Create tables and initialize data if necessary
