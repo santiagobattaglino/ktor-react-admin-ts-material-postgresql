@@ -7,6 +7,7 @@ import java.util.*
 
 object SaleProducts : Table(tableName = "sale_products") {
     val id = pgSerial("id", specifier = "PRIMARY KEY")
+    val saleId = integer("sale_id").nonnull()
     val productId = integer("product_id").nonnull()
     val size = integer("size").nonnull()
     val quantity = integer("quantity").nonnull()
@@ -18,6 +19,7 @@ object SaleProducts : Table(tableName = "sale_products") {
 
 data class SaleProduct(
         val id: Int? = null,
+        val saleId: Int,
         val productId: Int,
         val size: Int,
         val quantity: Int,
@@ -30,6 +32,7 @@ data class SaleProduct(
         if (id != null) {
             builder[SaleProducts.id] = id
         }
+        builder[SaleProducts.saleId] = saleId
         builder[SaleProducts.productId] = productId
         builder[SaleProducts.size] = size
         builder[SaleProducts.quantity] = quantity
@@ -42,6 +45,7 @@ data class SaleProduct(
     companion object {
         fun extractFrom(extractor: ColumnValueExtractor) = SaleProduct(
                 id = extractor[SaleProducts.id],
+                saleId = extractor[SaleProducts.saleId],
                 productId = extractor[SaleProducts.productId],
                 size = extractor[SaleProducts.size],
                 quantity = extractor[SaleProducts.quantity],

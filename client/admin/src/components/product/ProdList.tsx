@@ -1,9 +1,31 @@
 import React from 'react'
-import { Datagrid, DeleteButton, EditButton, List, TextField, ReferenceField, DateField, FunctionField } from 'react-admin'
+import {
+    Datagrid,
+    DeleteButton,
+    EditButton,
+    List,
+    TextField,
+    ReferenceField,
+    DateField,
+    FunctionField,
+    TextInput,
+    ReferenceInput,
+    SelectInput,
+    Filter
+} from 'react-admin'
+
+const ProdFilter = (props) => (
+    <Filter {...props}>
+        <TextInput label="Search" source="q" alwaysOn />
+        <ReferenceInput label="Categoría" source="catId" reference="api/v1/categories" allowEmpty>
+            <SelectInput optionText="name" />
+        </ReferenceInput>
+    </Filter>
+);
 
 const ProdList = (props: any) => {
     return (
-        <List title="Productos" {...props} perPage={25}>
+        <List title="Productos" filters={<ProdFilter />} {...props} perPage={25}>
             <Datagrid>
                 <TextField source='id' label='SKU' />
                 <ReferenceField label="Categoría" source="catId" reference="api/v1/categories" sortBy="name">

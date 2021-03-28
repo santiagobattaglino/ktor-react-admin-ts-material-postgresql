@@ -45,6 +45,7 @@ private fun Application.bootstrapDatabase() = runBlocking {
     val priceDao by inject<PriceDao>()
     val stockDao by inject<StockDao>()
     val saleDao by inject<SaleDao>()
+    val saleProductDao by inject<SaleProductDao>()
 
     dataSource.tx {
 
@@ -58,6 +59,7 @@ private fun Application.bootstrapDatabase() = runBlocking {
         // priceDao.dropTableIfExists()
         // stockDao.dropTableIfExists()
         // saleDao.dropTableIfExists()
+        // saleProductDao.dropTableIfExists()
 
         // Create tables
         departmentDao.createTableIfNotExists()
@@ -69,6 +71,7 @@ private fun Application.bootstrapDatabase() = runBlocking {
         priceDao.createTableIfNotExists()
         stockDao.createTableIfNotExists()
         saleDao.createTableIfNotExists()
+        saleProductDao.createTableIfNotExists()
     }
 }
 
@@ -173,6 +176,8 @@ private fun Application.bootstrapRest() {
             stockRoute()
             // api/v1/sales
             saleRoute()
+            // api/v1/saleproducts
+            saleProductRoute()
         }
     }
 }
