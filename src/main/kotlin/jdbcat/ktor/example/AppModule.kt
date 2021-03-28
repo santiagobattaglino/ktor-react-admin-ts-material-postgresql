@@ -1,7 +1,6 @@
 package jdbcat.ktor.example
 
 import com.zaxxer.hikari.HikariDataSource
-import io.ktor.server.engine.*
 import jdbcat.ktor.example.db.dao.*
 import jdbcat.ktor.example.service.EmployeeReportService
 import org.koin.dsl.module
@@ -19,7 +18,7 @@ val appModule = module(createdAtStart = true) {
 
     // Data source. We use 1 data source per 1 database. One data source may supply multiple connections.
     single<DataSource> {
-        HikariDataSource((get() as AppSettings).hikariMainDatabaseConfigDev)
+        HikariDataSource((get() as AppSettings).hikariMainDatabaseConfig)
     }
 
     // Inject DAO objects

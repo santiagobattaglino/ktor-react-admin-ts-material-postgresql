@@ -17,18 +17,9 @@ class AppSettings(private val config: Config) {
      * Loads a HikariCP config specified in /resources/application.conf
      * or any other .conf files visible to HOCON.
      */
-    val hikariMainDatabaseConfigDev by lazy {
-        val dbConfig = config.getConfig("jdbcat-ktor.main-db.hikari.dev")
+    val hikariMainDatabaseConfig by lazy {
+        val dbConfig = config.getConfig("jdbcat-ktor.main-db.hikari")
         HikariConfig(dbConfig.toProperties())
-    }
-
-    val hikariMainDatabaseConfigProd by lazy {
-        val dbConfig = config.getConfig("jdbcat-ktor.main-db.hikari.prod")
-        HikariConfig(dbConfig.toProperties())
-    }
-
-    val someOtherProperty by lazy {
-        config.getConfig("some-other-config").getString("some-other-property")!!
     }
 }
 
