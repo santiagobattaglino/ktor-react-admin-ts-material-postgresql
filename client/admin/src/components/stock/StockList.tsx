@@ -24,7 +24,7 @@ const StockList = (props: any) => {
                 <TextField source='t10' />
                 <TextField source='t11' />
                 <TextField source='notes' label='Notes' />
-                <DateField source="date_created" />
+                <DateField source="dateCreated" />
 
                 <EditButton basePath='stock' undoable={true} />
                 <DeleteButton basePath='stock' undoable={true} />

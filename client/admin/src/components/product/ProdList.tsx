@@ -1,5 +1,5 @@
 import React from 'react'
-import { Datagrid, DeleteButton, EditButton, List, TextField, ReferenceField } from 'react-admin'
+import { Datagrid, DeleteButton, EditButton, List, TextField, ReferenceField, DateField } from 'react-admin'
 
 const ProdList = (props: any) => {
     return (
@@ -15,6 +15,7 @@ const ProdList = (props: any) => {
                     <TextField source="name" />
                 </ReferenceField>
                 <TextField source='manufacturingCost' label='Costo de Fabricación' />
+                <DateField source="dateCreated" />
 
                 <EditButton basePath='products' undoable={true} />
                 <DeleteButton basePath='products' undoable={true} />

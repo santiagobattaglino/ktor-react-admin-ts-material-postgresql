@@ -5,14 +5,14 @@ import jdbcat.ktor.example.db.model.Sale
 import java.util.*
 
 data class CreateSaleRequest(
-        val placeId: Int,
-        val userId: Int,
+        val sellerId: Int,
+        val clientId: Int,
         val notes: String?
 ) {
     fun toEntity() = Sale(
             id = null,
-            sellerId = placeId,
-            clientId = userId,
+            sellerId = sellerId,
+            clientId = clientId,
             notes = notes,
             dateCreated = Date()
     )
@@ -20,14 +20,14 @@ data class CreateSaleRequest(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class EditSaleRequest(
-        val placeId: Int,
-        val userId: Int,
+        val sellerId: Int,
+        val clientId: Int,
         val notes: String?
 ) {
     fun toEntity(id: Int) = Sale(
             id = id,
-            sellerId = placeId,
-            clientId = userId,
+            sellerId = sellerId,
+            clientId = clientId,
             notes = notes,
             dateCreated = Date()
     )
@@ -35,8 +35,8 @@ data class EditSaleRequest(
 
 data class SaleResponse(
         val id: Int,
-        val placeId: Int,
-        val userId: Int,
+        val sellerId: Int,
+        val clientId: Int,
         val notes: String?,
         val dateCreated: Date
 ) {
@@ -44,8 +44,8 @@ data class SaleResponse(
         fun fromEntity(entity: Sale) =
                 SaleResponse(
                         id = entity.id!!,
-                        placeId = entity.sellerId,
-                        userId = entity.clientId,
+                        sellerId = entity.sellerId,
+                        clientId = entity.clientId,
                         notes = entity.notes,
                         dateCreated = entity.dateCreated
                 )

@@ -159,6 +159,16 @@ class StockDao(private val dataSource: DataSource) {
         }
 
         private val selectByIdSqlTemplate = sqlTemplate(StockMovements) {
+            /*"""
+            | SELECT MAX(id) AS id, product_id, user_id, SUM(t1) AS t1, SUM(t2) AS t2, SUM(t3) AS t3,
+            |   SUM(t4) AS t4, SUM(t5) AS t5, SUM(t6) AS t6, SUM(t7) AS t7, SUM(t8) AS t8, SUM(t9) AS t9,
+            |   SUM(t10) AS t10, SUM(t11) AS t11,
+            |   SUM(total) AS total, MAX(notes) AS notes, MAX(date_created) AS date_created
+            |   FROM $tableName 
+            |   WHERE $productId = (SELECT $productId FROM $tableName WHERE $id = ${id.v})
+            |   AND $userId = (SELECT $userId FROM $tableName WHERE $id = ${id.v})
+            |   GROUP BY $productId, $userId
+            """*/
             "SELECT * FROM $tableName WHERE $id = ${id.v}"
         }
 
@@ -173,18 +183,25 @@ class StockDao(private val dataSource: DataSource) {
         }
 
         private val selectAllSqlTemplate = sqlTemplate(StockMovements) {
+            /*"""
+            | SELECT MAX(id) AS id, product_id, user_id, SUM(t1) AS t1, SUM(t2) AS t2, SUM(t3) AS t3,
+            |   SUM(t4) AS t4, SUM(t5) AS t5, SUM(t6) AS t6, SUM(t7) AS t7, SUM(t8) AS t8, SUM(t9) AS t9,
+            |   SUM(t10) AS t10, SUM(t11) AS t11,
+            |   SUM(total) AS total, MAX(notes) AS notes, MAX(date_created) AS date_created
+            |   FROM $tableName 
+            |   GROUP BY $productId, $userId
+            |   ORDER BY $id
+            |   DESC LIMIT ? OFFSET ?
+            """*/
             "SELECT * FROM $tableName ORDER BY $id DESC LIMIT ? OFFSET ?"
         }
 
-        /*select products.*, max(categories.name) as category_name, max(colors.name) as color_name, SUM(stock_movements.quantity) as quantity
-        from products
-        left join categories on products.cat_id = categories.id
-        left join colors on products.color_id = colors.id
-        left join stock_movements on products.id = stock_movements.product_id
-        group by products.id
-        order by products.id*/
-
         private val deleteById = sqlTemplate(StockMovements) {
+            /*"""
+            | DELETE FROM $tableName 
+            |   WHERE $productId = (SELECT $productId FROM $tableName WHERE $id = ${id.v})
+            |   AND $userId = (SELECT $userId FROM $tableName WHERE $id = ${id.v}) 
+            """*/
             "DELETE FROM $tableName WHERE $id = ${id.v}"
         }
 

@@ -12,7 +12,8 @@ const SaleList = (props: any) => {
                 <ReferenceField label="Cliente" source="clientId" reference="api/v1/users" sortBy="firstName">
                     <TextField source="firstName" />
                 </ReferenceField>
-
+                <DateField source="dateCreated" />
+                
                 <EditButton basePath='sales' undoable={true} />
                 <DeleteButton basePath='sales' undoable={true} />
             </Datagrid>
