@@ -3,7 +3,7 @@ import { Datagrid, DeleteButton, EditButton, List, TextField } from 'react-admin
 
 const ColorList = (props: any) => {
     return (
-        <List title="Colores" {...props} perPage={25}>
+        <List title="Colores" {...props} perPage={25} pagination={false}>
             <Datagrid>
                 <TextField source='name' label='Nombre' />
                 <EditButton basePath='colors' undoable={false} />

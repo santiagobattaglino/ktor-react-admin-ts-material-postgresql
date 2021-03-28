@@ -14,7 +14,7 @@ const ProdCreate = (props: any) => {
                     <SelectInput optionText="name" />
                 </ReferenceInput>
                 <TextInput source='idMl' label='idMl' />
-                <TextInput source='manufacturingCost' label='manufacturingCost' />
+                <TextInput source='manufacturingCost' label='Costo' />
                 <TextInput source='notes' label='Notas' />
             </SimpleForm>
         </Create>

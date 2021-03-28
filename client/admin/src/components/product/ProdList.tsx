@@ -1,5 +1,5 @@
 import React from 'react'
-import { Datagrid, DeleteButton, EditButton, List, TextField, ReferenceField, DateField } from 'react-admin'
+import { Datagrid, DeleteButton, EditButton, List, TextField, ReferenceField, DateField, FunctionField } from 'react-admin'
 
 const ProdList = (props: any) => {
     return (
@@ -14,7 +14,14 @@ const ProdList = (props: any) => {
                 <ReferenceField label="Color/Estampa" source="colorId" reference="api/v1/colors" sortBy="name">
                     <TextField source="name" />
                 </ReferenceField>
-                <TextField source='manufacturingCost' label='Costo de Fabricación' />
+                <TextField source='manufacturingCost' label='Costo' />
+                <FunctionField source='manufacturingCost' label="X Mayor" render={
+                    record => `${Math.round(record.manufacturingCost * 1.8)}`} />
+                <FunctionField source='manufacturingCost' label="Precio Capilla" render={
+                    record => `${Math.round((record.manufacturingCost * 1.8) * 1.3)}`} />
+                <FunctionField source='manufacturingCost' label="X Menor" render={
+                    record => `${Math.round((record.manufacturingCost * 1.8) * 2)}`} />
+
                 <DateField source="dateCreated" />
 
                 <EditButton basePath='products' undoable={true} />
