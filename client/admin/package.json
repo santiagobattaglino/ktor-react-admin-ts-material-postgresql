@@ -59,5 +59,8 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/query-string": "^6.3.0",
+    "@types/react-router-dom": "^5.1.7"
+  }
 }

@@ -23,6 +23,9 @@ import StockList from './components/stock/StockList';
 import SaleCreate from './components/sale/SaleCreate';
 import SaleEdit from './components/sale/SaleEdit';
 import SaleList from './components/sale/SaleList';
+import SaleProductsCreate from './components/saleproducts/SaleProductsCreate';
+import SaleProductsEdit from './components/saleproducts/SaleProductsEdit';
+import SaleProductsList from './components/saleproducts/SaleProductsList';
 
 function App() {
     let apiUrl = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_API_URL_DEV : process.env.REACT_APP_API_URL_PROD;
@@ -79,6 +82,13 @@ function App() {
                 list={SaleList}
                 create={SaleCreate}
                 edit={SaleEdit}
+            />
+            <Resource
+                name='api/v1/saleproducts'
+                options={{ label: 'SaleProducts' }}
+                list={SaleProductsList}
+                create={SaleProductsCreate}
+                edit={SaleProductsEdit}
             />
         </Admin>
     );
