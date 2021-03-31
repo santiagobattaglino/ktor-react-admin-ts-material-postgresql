@@ -40,7 +40,7 @@ fun Route.saleProductRoute() {
             }
             dataSource.tx { _ ->
                 val response = dao
-                        .selectAll(range = range, sort = sort)
+                        .selectAll(filter = filter, range = range, sort = sort)
                         .map { SaleProductResponse.fromEntity(it) }
                         .toList()
                 call.response.header("X-Total-Count", dao.countAll())

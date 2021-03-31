@@ -1,3 +1,3 @@
 package jdbcat.ktor.example.db.model
 
-data class Filter(val name: String?)
+data class Filter(val name: String?, val saleId: Int?)

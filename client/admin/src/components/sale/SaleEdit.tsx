@@ -34,8 +34,8 @@ const SaleEdit = (props: any) => {
                     <ReferenceManyField
                         addLabel={false}
                         reference="api/v1/saleproducts"
-                        target="name"
-                        sort={{ field: 'created_at', order: 'DESC' }}  >
+                        target="saleId"
+                        sort={{ field: 'id', order: 'DESC' }}  >
                         <Datagrid>
                             <TextField source='id' label='id' />
                             <TextField source='saleId' label='saleId' />

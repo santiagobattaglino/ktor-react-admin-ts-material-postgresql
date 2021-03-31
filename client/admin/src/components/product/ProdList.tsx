@@ -11,7 +11,8 @@ import {
     TextInput,
     ReferenceInput,
     SelectInput,
-    Filter
+    Filter,
+    ImageField
 } from 'react-admin'
 
 const ProdFilter = (props) => (
@@ -28,6 +29,7 @@ const ProdList = (props: any) => {
         <List title="Productos" filters={<ProdFilter />} {...props} perPage={25}>
             <Datagrid>
                 <TextField source='id' label='SKU' />
+                <ImageField source="https://drive.google.com/thumbnail?id=1Y1iTuaOiWmj1pwfjveno5v-BxUxC2CuZ&amp;sz=w200-h200" label="Foto" />
                 <ReferenceField label="Categoría" source="catId" reference="api/v1/categories" sortBy="name">
                     <TextField source="name" />
                 </ReferenceField>

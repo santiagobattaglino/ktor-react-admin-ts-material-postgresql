@@ -2,6 +2,7 @@ package jdbcat.ktor.example.db.dao
 
 import jdbcat.core.*
 import jdbcat.ktor.example.EntityNotFoundException
+import jdbcat.ktor.example.db.model.Filter
 import jdbcat.ktor.example.db.model.SaleProduct
 import jdbcat.ktor.example.db.model.SaleProducts
 import mu.KotlinLogging
@@ -74,19 +75,28 @@ class SaleProductDao(private val dataSource: DataSource) {
                 ?: throw EntityNotFoundException(errorMessage = "SaleProduct id=$id cannot be found")
     }
 
-    suspend fun selectAll(range: List<Int>?, sort: List<String>?) = dataSource.txRequired { connection ->
-        val stmt = selectAllSqlTemplate.prepareStatement(connection)
-        range?.let {
-            stmt.setInt(1, it[1] - it[0] + 1) // LIMIT
-            // OFFSET
-            if (it[0] == 0) {
-                stmt.setInt(2, it[0])
-            } else {
-                stmt.setInt(2, it[0] + 1)
+    suspend fun selectAll(filter: Filter?, range: List<Int>?, sort: List<String>?) = dataSource.txRequired { connection ->
+        val stmt: TemplatizeStatement
+        if (filter?.saleId != null) {
+            stmt = selectBySaleIdSqlTemplate.prepareStatement(connection)
+                    .setColumns {
+                        it[SaleProducts.saleId] = filter.saleId
+                    }
+            logger.debug { "selectAll() by saleId: $stmt" }
+        } else {
+            stmt = selectAllSqlTemplate.prepareStatement(connection)
+            range?.let {
+                stmt.setInt(1, it[1] - it[0] + 1) // LIMIT
+                // OFFSET
+                if (it[0] == 0) {
+                    stmt.setInt(2, it[0])
+                } else {
+                    stmt.setInt(2, it[0] + 1)
+                }
             }
+            logger.debug { "selectAll(): $stmt" }
         }
 
-        logger.debug { "selectAll(): $stmt" }
         stmt.executeQuery().asSequence().map {
             SaleProduct.extractFrom(it)
         }
@@ -142,6 +152,10 @@ class SaleProductDao(private val dataSource: DataSource) {
 
         private val selectAllSqlTemplate = sqlTemplate(SaleProducts) {
             "SELECT * FROM $tableName ORDER BY $id DESC LIMIT ? OFFSET ?"
+        }
+
+        private val selectBySaleIdSqlTemplate = sqlTemplate(SaleProducts) {
+            "SELECT * FROM $tableName WHERE $saleId = ${saleId.v} ORDER BY $id"
         }
 
         private val deleteById = sqlTemplate(SaleProducts) {
