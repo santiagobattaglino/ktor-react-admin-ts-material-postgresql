@@ -11,6 +11,7 @@ data class CreateSaleProductRequest(
         val quantity: Int,
         val paymentMethodId: Int,
         val priceId: Int,
+        val customPrice: Int?,
         val notes: String?
 ) {
     fun toEntity() = SaleProduct(
@@ -21,6 +22,7 @@ data class CreateSaleProductRequest(
             quantity = quantity,
             paymentMethodId = paymentMethodId,
             priceId = priceId,
+            customPrice = customPrice,
             notes = notes,
             dateCreated = Date()
     )
@@ -34,6 +36,7 @@ data class EditSaleProductRequest(
         val quantity: Int,
         val paymentMethodId: Int,
         val priceId: Int,
+        val customPrice: Int?,
         val notes: String?
 ) {
     fun toEntity(id: Int) = SaleProduct(
@@ -44,6 +47,7 @@ data class EditSaleProductRequest(
             quantity = quantity,
             paymentMethodId = paymentMethodId,
             priceId = priceId,
+            customPrice = customPrice,
             notes = notes,
             dateCreated = Date()
     )
@@ -57,6 +61,7 @@ data class SaleProductResponse(
         val quantity: Int,
         val paymentMethodId: Int,
         val priceId: Int,
+        val customPrice: Int?,
         val notes: String?,
         val dateCreated: Date
 ) {
@@ -70,6 +75,7 @@ data class SaleProductResponse(
                         quantity = entity.quantity,
                         paymentMethodId = entity.paymentMethodId,
                         priceId = entity.priceId,
+                        customPrice = entity.customPrice,
                         notes = entity.notes,
                         dateCreated = entity.dateCreated
                 )

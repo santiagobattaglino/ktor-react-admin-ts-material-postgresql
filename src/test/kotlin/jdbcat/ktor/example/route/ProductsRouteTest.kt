@@ -53,6 +53,7 @@ fun newProduct(name: String) = Product(
         material = "material",
         colorId = 1,
         manufacturingCost = 1,
+        photoId = "https://drive.google.com/thumbnail?id=1Y1iTuaOiWmj1pwfjveno5v-BxUxC2CuZ&amp;sz=w200-h200",
         priceId = 1,
         notes = "notes",
         idMl = null,

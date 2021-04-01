@@ -28,7 +28,14 @@ const SaleProductsCreate = (props: any) => {
                     { id: '3', name: 'MERCADO PAGO' },
                     { id: '4', name: 'TRANSFERENCIA' },
                 ]} />
-                <TextInput source='priceId' />
+                <AutocompleteInput source="priceId" choices={[
+                    { id: '1', name: 'X MAYOR' },
+                    { id: '2', name: 'PRECIO CAPILLA' },
+                    { id: '3', name: 'PRECIO POR MENOR' },
+                    { id: '4', name: 'OTRO' },
+                ]} />
+                <TextInput source='customPrice' />
+
                 <TextInput source='notes' />
             </SimpleForm>
         </Create>

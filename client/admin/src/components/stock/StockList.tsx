@@ -1,5 +1,5 @@
 import React from 'react'
-import { Datagrid, DeleteButton, EditButton, List, TextField, ReferenceField, DateField } from 'react-admin'
+import { Datagrid, DeleteButton, EditButton, List, TextField, ReferenceField, DateField, FunctionField } from 'react-admin'
 
 const StockList = (props: any) => {
     return (
@@ -7,8 +7,12 @@ const StockList = (props: any) => {
             <Datagrid>
                 <TextField source='id' label='id' />
                 <ReferenceField label="Producto" source="productId" reference="api/v1/products" sortBy="name">
-                    <TextField source="name" />
+                    <FunctionField
+                        label="Nombre"
+                        render={record => `SKU ${record.id} - ${record.name}`}
+                    />
                 </ReferenceField>
+
                 <ReferenceField label="Usuario" source="userId" reference="api/v1/users" sortBy="firstName">
                     <TextField source="firstName" />
                 </ReferenceField>

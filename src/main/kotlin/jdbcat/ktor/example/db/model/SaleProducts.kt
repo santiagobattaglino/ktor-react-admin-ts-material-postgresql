@@ -13,6 +13,7 @@ object SaleProducts : Table(tableName = "sale_products") {
     val quantity = integer("quantity").nonnull()
     val paymentMethodId = integer("payment_method_id").nonnull()
     val priceId = integer("priceId").nonnull()
+    val customPrice = integer("custom_price")
     val notes = varchar("notes", size = 255)
     val dateCreated = javaDate("date_created").nonnull()
 }
@@ -25,6 +26,7 @@ data class SaleProduct(
         val quantity: Int,
         val paymentMethodId: Int,
         val priceId: Int,
+        val customPrice: Int?,
         val notes: String?,
         val dateCreated: Date
 ) {
@@ -38,6 +40,7 @@ data class SaleProduct(
         builder[SaleProducts.quantity] = quantity
         builder[SaleProducts.paymentMethodId] = paymentMethodId
         builder[SaleProducts.priceId] = priceId
+        builder[SaleProducts.customPrice] = customPrice
         builder[SaleProducts.notes] = notes
         builder[SaleProducts.dateCreated] = dateCreated
     }
@@ -51,6 +54,7 @@ data class SaleProduct(
                 quantity = extractor[SaleProducts.quantity],
                 paymentMethodId = extractor[SaleProducts.paymentMethodId],
                 priceId = extractor[SaleProducts.priceId],
+                customPrice = extractor[SaleProducts.customPrice],
                 notes = extractor[StockMovements.notes],
                 dateCreated = extractor[StockMovements.dateCreated]
         )

@@ -12,6 +12,7 @@ data class CreateProductRequest(
         val idMl: Int?,
         val priceId: Int,
         val manufacturingCost: Int,
+        val photoId: String?,
         val notes: String?
 ) {
     // Here we set up the object to be saved
@@ -24,6 +25,7 @@ data class CreateProductRequest(
             idMl = idMl,
             priceId = priceId,
             manufacturingCost = manufacturingCost,
+            photoId = photoId,
             notes = notes,
             dateCreated = Date()
     )
@@ -38,6 +40,7 @@ data class EditProductRequest(
         val idMl: Int?,
         val priceId: Int,
         val manufacturingCost: Int,
+        val photoId: String?,
         val notes: String?
 ) {
     fun toEntity(id: Int) = Product(
@@ -49,6 +52,7 @@ data class EditProductRequest(
             idMl = idMl,
             priceId = priceId,
             manufacturingCost = manufacturingCost,
+            photoId = photoId,
             notes = notes,
             dateCreated = Date()
     )
@@ -63,6 +67,7 @@ data class ProductResponse(
         val idMl: Int?,
         val priceId: Int,
         val manufacturingCost: Int,
+        val photoId: String?,
         val notes: String?,
         val dateCreated: Date
 ) {
@@ -77,6 +82,7 @@ data class ProductResponse(
                         idMl = entity.idMl,
                         priceId = entity.priceId,
                         manufacturingCost = entity.manufacturingCost,
+                        photoId = entity.photoId,
                         notes = entity.notes,
                         dateCreated = entity.dateCreated
                 )

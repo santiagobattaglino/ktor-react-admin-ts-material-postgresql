@@ -2,6 +2,7 @@ package jdbcat.ktor.example.db.dao
 
 import jdbcat.core.*
 import jdbcat.ktor.example.EntityNotFoundException
+import jdbcat.ktor.example.db.model.Filter
 import jdbcat.ktor.example.db.model.Product
 import jdbcat.ktor.example.db.model.Products
 import mu.KotlinLogging
@@ -74,9 +75,62 @@ class ProductDao(private val dataSource: DataSource) {
                 ?: throw EntityNotFoundException(errorMessage = "Product id=$id cannot be found")
     }
 
-    suspend fun selectAll() = dataSource.txRequired { connection ->
-        val stmt = selectAllSqlTemplate.prepareStatement(connection)
-        logger.debug { "selectAll(): $stmt" }
+    suspend fun selectAll(filter: Filter?, range: List<Int>?, sort: List<String>?) = dataSource.txRequired { connection ->
+        var stmt: TemplatizeStatement = selectAllSqlTemplate.prepareStatement(connection)
+
+        range?.let { range ->
+            stmt.setInt(1, range[1] - range[0] + 1)
+            if (range[0] == 0) {
+                stmt.setInt(2, range[0])
+            } else {
+                stmt.setInt(2, range[0] + 1)
+            }
+            logger.debug { "selectAll() paged: $stmt" }
+        }
+
+        filter?.let { filter ->
+            filter.catId?.let { catId ->
+                stmt = selectByCatIdSqlTemplate.prepareStatement(connection)
+                        .setColumns {
+                            it[Products.catId] = catId
+                        }
+
+                range?.let { range ->
+                    stmt.setInt(2, range[1] - range[0] + 1)
+                    if (range[0] == 0) {
+                        stmt.setInt(3, range[0])
+                    } else {
+                        stmt.setInt(3, range[0] + 1)
+                    }
+                }
+                logger.debug { "selectAll() by catId, paged: $stmt" }
+            }
+
+            filter.q?.let {
+                stmt = selectByQueryIdSqlTemplate.prepareStatement(connection)
+
+                stmt.setString(1, "%$it%")
+                stmt.setString(2, "%$it%")
+
+                range?.let { range ->
+                    stmt.setInt(3, range[1] - range[0] + 1)
+                    if (range[0] == 0) {
+                        stmt.setInt(4, range[0])
+                    } else {
+                        stmt.setInt(4, range[0] + 1)
+                    }
+                }
+                logger.debug { "selectAll() by query, paged: $stmt" }
+            }
+
+            filter.id?.let { id ->
+                stmt = selectByIdsSqlTemplate.prepareStatement(connection)
+
+                stmt.setArray(1, connection.createArrayOf("INT", id.toTypedArray()))
+                logger.debug { "selectAll() by ANY(ids), paged: $stmt" }
+            }
+        }
+
         stmt.executeQuery().asSequence().map {
             Product.extractFrom(it)
         }
@@ -126,6 +180,15 @@ class ProductDao(private val dataSource: DataSource) {
             """
         }
 
+        private val selectAllSqlTemplate = sqlTemplate(Products) {
+            """
+            | SELECT *
+            |   FROM $tableName 
+            |   ORDER BY $id DESC
+            |   LIMIT ? OFFSET ?
+            """
+        }
+
         private val selectByIdSqlTemplate = sqlTemplate(Products) {
             """
             | SELECT *
@@ -134,11 +197,33 @@ class ProductDao(private val dataSource: DataSource) {
             """
         }
 
-        private val selectAllSqlTemplate = sqlTemplate(Products) {
+        private val selectByIdsSqlTemplate = sqlTemplate(Products) {
             """
             | SELECT *
             |   FROM $tableName 
-            |   ORDER BY $id
+            |   WHERE $id = ANY (?)
+            |   ORDER BY $id DESC
+            """
+        }
+
+        private val selectByCatIdSqlTemplate = sqlTemplate(Products) {
+            """
+            | SELECT *
+            |   FROM $tableName 
+            |   WHERE $catId = ${catId.v}
+            |   ORDER BY $id DESC
+            |   LIMIT ? OFFSET ?
+            """
+        }
+
+        private val selectByQueryIdSqlTemplate = sqlTemplate(Products) {
+            """
+            | SELECT *
+            |   FROM $tableName 
+            |   WHERE CAST($id AS TEXT) ILIKE ?
+            |   OR name ILIKE ?
+            |   ORDER BY $id DESC
+            |   LIMIT ? OFFSET ?
             """
         }
 

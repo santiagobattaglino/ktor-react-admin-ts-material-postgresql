@@ -44,6 +44,7 @@ const SaleEdit = (props: any) => {
                             <TextField source='quantity' />
                             <TextField source='paymentMethodId' />
                             <TextField source='priceId' />
+                            <TextField source='customPrice' />
                             <TextField source='notes' />
                             <DateField source="dateCreated" />
                             <ShowButton />

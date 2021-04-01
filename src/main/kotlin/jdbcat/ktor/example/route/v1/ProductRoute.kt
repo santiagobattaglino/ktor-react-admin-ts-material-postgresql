@@ -1,18 +1,15 @@
 package jdbcat.ktor.example.route.v1
 
-import io.ktor.application.call
-import io.ktor.http.HttpStatusCode
-import io.ktor.request.receive
-import io.ktor.response.header
-import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.routing.delete
-import io.ktor.routing.get
-import io.ktor.routing.post
-import io.ktor.routing.put
-import io.ktor.routing.route
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.request.*
+import io.ktor.response.*
+import io.ktor.routing.*
 import jdbcat.core.tx
 import jdbcat.ktor.example.db.dao.ProductDao
+import jdbcat.ktor.example.db.model.Filter
 import jdbcat.ktor.example.route.v1.model.CreateProductRequest
 import jdbcat.ktor.example.route.v1.model.EditProductRequest
 import jdbcat.ktor.example.route.v1.model.ProductResponse
@@ -25,18 +22,28 @@ private val logger = KotlinLogging.logger { }
 fun Route.productRoute() {
 
     val dataSource by inject<DataSource>()
-    val productDao by inject<ProductDao>()
+    val dao by inject<ProductDao>()
 
     route("/products") {
 
         // get all
         get("/") { _ ->
+            val mapper = jacksonObjectMapper()
+            val filter = call.parameters["filter"]?.let {
+                mapper.readValue<Filter>(it)
+            }
+            val range = call.parameters["range"]?.let {
+                mapper.readValue<List<Int>>(it)
+            }
+            val sort = call.parameters["sort"]?.let {
+                mapper.readValue<List<String>>(it)
+            }
             dataSource.tx { _ ->
-                val productsResponse = productDao
-                    .selectAll()
-                    .map { ProductResponse.fromEntity(it) }
-                    .toList()
-                call.response.header("X-Total-Count", productsResponse.size)
+                val productsResponse = dao
+                        .selectAll(filter = filter, range = range, sort = sort)
+                        .map { ProductResponse.fromEntity(it) }
+                        .toList()
+                call.response.header("X-Total-Count", dao.countAll())
                 call.respond(productsResponse)
             }
         }
@@ -45,9 +52,9 @@ fun Route.productRoute() {
         get("/{id}") { _ ->
             val id = call.parameters["id"]!!.toInt()
             dataSource.tx {
-                val productResponse = productDao
-                    .select(id = id)
-                    .let { ProductResponse.fromEntity(it) }
+                val productResponse = dao
+                        .select(id = id)
+                        .let { ProductResponse.fromEntity(it) }
                 call.respond(productResponse)
             }
         }
@@ -57,9 +64,9 @@ fun Route.productRoute() {
             val addProductRequest = call.receive<CreateProductRequest>()
             val productToAdd = addProductRequest.toEntity()
             dataSource.tx {
-                val productResponse = productDao
-                    .insert(item = productToAdd)
-                    .let { ProductResponse.fromEntity(it) }
+                val productResponse = dao
+                        .insert(item = productToAdd)
+                        .let { ProductResponse.fromEntity(it) }
                 call.respond(productResponse)
             }
         }
@@ -70,9 +77,9 @@ fun Route.productRoute() {
             val editProductRequest = call.receive<EditProductRequest>()
             val productToUpdate = editProductRequest.toEntity(id = id)
             dataSource.tx {
-                val productResponse = productDao
-                    .update(item = productToUpdate)
-                    .let { ProductResponse.fromEntity(it) }
+                val productResponse = dao
+                        .update(item = productToUpdate)
+                        .let { ProductResponse.fromEntity(it) }
                 call.respond(productResponse)
             }
         }
@@ -80,7 +87,7 @@ fun Route.productRoute() {
         delete("/{id}") {
             val id = call.parameters["id"]!!.toInt()
             dataSource.tx {
-                productDao.delete(id = id)
+                dao.delete(id = id)
             }
             call.respond(HttpStatusCode.NoContent)
         }

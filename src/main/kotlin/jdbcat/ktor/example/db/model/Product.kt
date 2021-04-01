@@ -14,6 +14,7 @@ object Products : Table(tableName = "products") {
     val idMl = integer("id_ml")
     val priceId = integer("price_id").nonnull()
     val manufacturingCost = integer("manufacturing_cost").nonnull()
+    val photoId = varchar("photo_id", size = 255)
     val notes = varchar("notes", size = 255)
     val dateCreated = javaDate("date_created").nonnull()
 }
@@ -27,6 +28,7 @@ data class Product(
         val idMl: Int? = null,
         val priceId: Int,
         val manufacturingCost: Int,
+        val photoId: String?,
         val notes: String? = null,
         val dateCreated: Date
 ) {
@@ -41,6 +43,7 @@ data class Product(
         builder[Products.idMl] = idMl
         builder[Products.priceId] = priceId
         builder[Products.manufacturingCost] = manufacturingCost
+        builder[Products.photoId] = photoId
         builder[Products.notes] = notes
         builder[Products.dateCreated] = dateCreated
     }
@@ -55,6 +58,7 @@ data class Product(
                 idMl = extractor[Products.idMl],
                 priceId = extractor[Products.priceId],
                 manufacturingCost = extractor[Products.manufacturingCost],
+                photoId = extractor[Products.photoId],
                 notes = extractor[Products.notes],
                 dateCreated = extractor[Products.dateCreated]
         )
