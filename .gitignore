@@ -30,3 +30,4 @@ gradle-app.setting
 /client/admin/package-lock.json
 /client/admin/.vscode
 .env
+db_bkp.sql
