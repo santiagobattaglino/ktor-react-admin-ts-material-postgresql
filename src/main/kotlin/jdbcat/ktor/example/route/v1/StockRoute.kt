@@ -10,10 +10,7 @@ import io.ktor.routing.*
 import jdbcat.core.tx
 import jdbcat.ktor.example.db.dao.StockDao
 import jdbcat.ktor.example.db.model.Filter
-import jdbcat.ktor.example.route.v1.model.CreateStockRequest
-import jdbcat.ktor.example.route.v1.model.EditStockRequest
-import jdbcat.ktor.example.route.v1.model.StockResponse
-import jdbcat.ktor.example.route.v1.model.StockUserResponse
+import jdbcat.ktor.example.route.v1.model.*
 import mu.KotlinLogging
 import org.koin.ktor.ext.inject
 import javax.sql.DataSource
@@ -24,6 +21,20 @@ fun Route.stockRoute() {
 
     val dataSource by inject<DataSource>()
     val stockDao by inject<StockDao>()
+
+    route("/report") {
+        // get report list
+        get("/") { _ ->
+            dataSource.tx { _ ->
+                val response = stockDao
+                        .selectReport()
+                        .map { StockReportResponse.fromEntity(it) }
+                        .toList()
+                call.response.header("X-Total-Count", response.size)
+                call.respond(response)
+            }
+        }
+    }
 
     route("/stock") {
 

@@ -32,6 +32,7 @@ val appModule = module(createdAtStart = true) {
     single { StockDao(dataSource = get()) }
     single { SaleDao(dataSource = get()) }
     single { SaleProductDao(dataSource = get()) }
+    single { OptionDao(dataSource = get()) }
 
     // Business logic objects
     single { EmployeeReportService(dataSource = get()) }

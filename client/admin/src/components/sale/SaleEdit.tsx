@@ -11,7 +11,9 @@ import {
     Datagrid,
     DateField,
     TextField,
-    ShowButton
+    EditButton,
+    ReferenceField,
+    FunctionField
 } from 'react-admin'
 import AddProductsButton from './AddProductsButton';
 
@@ -37,17 +39,17 @@ const SaleEdit = (props: any) => {
                         target="saleId"
                         sort={{ field: 'id', order: 'DESC' }}  >
                         <Datagrid>
-                            <TextField source='id' label='id' />
-                            <TextField source='saleId' label='saleId' />
-                            <TextField source='productId' label='productId' />
-                            <TextField source='size' />
-                            <TextField source='quantity' />
-                            <TextField source='paymentMethodId' />
-                            <TextField source='priceId' />
-                            <TextField source='customPrice' />
-                            <TextField source='notes' />
-                            <DateField source="dateCreated" />
-                            <ShowButton />
+                            <ReferenceField label="Producto" source="productId" reference="api/v1/products" sortBy="name">
+                                <FunctionField
+                                    label="Nombre"
+                                    render={(record: any) => `SKU ${record.id} - ${record.name}`}
+                                />
+                            </ReferenceField>
+                            <TextField source='size' label='Talle' />
+                            <TextField source='quantity' label='Cantidad' />
+                            <TextField source='notes' label='Notas' />
+                            <DateField source="dateCreated" label='Fecha' />
+                            <EditButton />
                         </Datagrid>
                     </ReferenceManyField>
                     <AddProductsButton {...props} />

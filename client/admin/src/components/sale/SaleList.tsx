@@ -12,6 +12,7 @@ const SaleList = (props: any) => {
                 <ReferenceField label="Cliente" source="clientId" reference="api/v1/users" sortBy="firstName">
                     <TextField source="firstName" />
                 </ReferenceField>
+                <TextField source='notes' label='Notas' />
                 <DateField source="dateCreated" />
                 
                 <EditButton basePath='sales' undoable={true} />

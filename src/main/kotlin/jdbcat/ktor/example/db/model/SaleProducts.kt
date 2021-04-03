@@ -12,7 +12,7 @@ object SaleProducts : Table(tableName = "sale_products") {
     val size = integer("size").nonnull()
     val quantity = integer("quantity").nonnull()
     val paymentMethodId = integer("payment_method_id").nonnull()
-    val priceId = integer("priceId").nonnull()
+    val priceId = integer("price_id").nonnull()
     val customPrice = integer("custom_price")
     val notes = varchar("notes", size = 255)
     val dateCreated = javaDate("date_created").nonnull()

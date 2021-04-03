@@ -108,3 +108,53 @@ data class StockByUser(
         )
     }
 }
+
+data class StockReport(
+        val id: Int,
+        val productId: Int,
+        val t1: Int?,
+        val t2: Int?,
+        val t3: Int?,
+        val t4: Int?,
+        val t5: Int?,
+        val t6: Int?,
+        val t7: Int?,
+        val t8: Int?,
+        val t9: Int?,
+        val t10: Int?,
+        val t11: Int?
+) {
+    fun copyValuesTo(builder: ColumnValueBuilder) {
+        builder[StockMovements.id] = id
+        builder[StockMovements.productId] = productId
+        builder[StockMovements.t1] = t1
+        builder[StockMovements.t2] = t2
+        builder[StockMovements.t3] = t3
+        builder[StockMovements.t4] = t4
+        builder[StockMovements.t5] = t5
+        builder[StockMovements.t6] = t6
+        builder[StockMovements.t7] = t7
+        builder[StockMovements.t8] = t8
+        builder[StockMovements.t9] = t9
+        builder[StockMovements.t10] = t10
+        builder[StockMovements.t11] = t11
+    }
+
+    companion object {
+        fun extractFrom(extractor: ColumnValueExtractor) = StockReport(
+                id = extractor[StockMovements.id],
+                productId = extractor[StockMovements.productId],
+                t1 = extractor[StockMovements.t1],
+                t2 = extractor[StockMovements.t2],
+                t3 = extractor[StockMovements.t3],
+                t4 = extractor[StockMovements.t4],
+                t5 = extractor[StockMovements.t5],
+                t6 = extractor[StockMovements.t6],
+                t7 = extractor[StockMovements.t7],
+                t8 = extractor[StockMovements.t8],
+                t9 = extractor[StockMovements.t9],
+                t10 = extractor[StockMovements.t10],
+                t11 = extractor[StockMovements.t11]
+        )
+    }
+}

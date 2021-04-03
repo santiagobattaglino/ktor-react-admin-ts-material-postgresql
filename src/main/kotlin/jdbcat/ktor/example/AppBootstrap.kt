@@ -11,6 +11,7 @@ import io.ktor.routing.*
 import io.ktor.util.*
 import jdbcat.core.tx
 import jdbcat.ktor.example.db.dao.*
+import jdbcat.ktor.example.route.optionRoute
 import jdbcat.ktor.example.route.v1.*
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -46,6 +47,7 @@ private fun Application.bootstrapDatabase() = runBlocking {
     val stockDao by inject<StockDao>()
     val saleDao by inject<SaleDao>()
     val saleProductDao by inject<SaleProductDao>()
+    val optionDao by inject<OptionDao>()
 
     dataSource.tx {
 
@@ -60,6 +62,7 @@ private fun Application.bootstrapDatabase() = runBlocking {
         // stockDao.dropTableIfExists()
         // saleDao.dropTableIfExists()
         // saleProductDao.dropTableIfExists()
+        // optionDao.dropTableIfExists()
 
         // Create tables
         departmentDao.createTableIfNotExists()
@@ -72,6 +75,7 @@ private fun Application.bootstrapDatabase() = runBlocking {
         stockDao.createTableIfNotExists()
         saleDao.createTableIfNotExists()
         saleProductDao.createTableIfNotExists()
+        optionDao.createTableIfNotExists()
     }
 }
 
@@ -178,6 +182,8 @@ private fun Application.bootstrapRest() {
             saleRoute()
             // api/v1/saleproducts
             saleProductRoute()
+            // api/v1/options
+            optionRoute()
         }
     }
 }

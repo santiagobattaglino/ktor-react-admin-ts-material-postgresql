@@ -5,6 +5,7 @@ import jdbcat.ktor.example.EntityNotFoundException
 import jdbcat.ktor.example.db.model.Stock
 import jdbcat.ktor.example.db.model.StockByUser
 import jdbcat.ktor.example.db.model.StockMovements
+import jdbcat.ktor.example.db.model.StockReport
 import mu.KotlinLogging
 import java.sql.SQLException
 import javax.sql.DataSource
@@ -100,6 +101,15 @@ class StockDao(private val dataSource: DataSource) {
                 }
             }
 
+    suspend fun selectReport() =
+            dataSource.txRequired { connection ->
+                val stmt = selectReportSqlTemplate.prepareStatement(connection)
+                logger.debug { "selectReport(): $stmt" }
+                stmt.executeQuery().asSequence().map {
+                    StockReport.extractFrom(it)
+                }
+            }
+
     suspend fun selectByUserId(userId: Int) = dataSource.txRequired { connection ->
         val stmt = selectByUserIdSqlTemplate
                 .prepareStatement(connection)
@@ -179,6 +189,80 @@ class StockDao(private val dataSource: DataSource) {
             |   WHERE $userId = ${userId.v} 
             |   GROUP BY $productId 
             |   ORDER BY $productId
+            """
+        }
+
+        private val selectReportSqlTemplate = sqlTemplate(StockMovements) {
+            """
+            | select id, product_id,
+            |     sum(t1) - (
+            |       select sum(quantity) as t1_sales 
+            |       from sale_products 
+            |       where size = 1 and product_id = $productId
+            |       group by product_id LIMIT 1
+            |   ) as t1,
+            |   sum(t2) - (
+            |       select sum(quantity) as t2_sales 
+            |       from sale_products 
+            |       where size = 2 and product_id = $productId
+            |       group by product_id LIMIT 1
+            |   ) as t2,
+            |   sum(t3) - (
+            |       select sum(quantity) as t3_sales 
+            |       from sale_products 
+            |       where size = 3 and product_id = $productId
+            |       group by product_id LIMIT 1
+            |   ) as t3,
+            |   sum(t4) - (
+            |       select sum(quantity) as t4_sales 
+            |       from sale_products 
+            |       where size = 4 and product_id = $productId
+            |       group by product_id LIMIT 1
+            |   ) as t4,
+            |   sum(t5) - (
+            |       select sum(quantity) as t5_sales 
+            |       from sale_products 
+            |       where size = 5 and product_id = $productId
+            |       group by product_id LIMIT 1
+            |   ) as t5,
+            |   sum(t6) - (
+            |       select sum(quantity) as t6_sales 
+            |       from sale_products 
+            |       where size = 6 and product_id = $productId
+            |       group by product_id LIMIT 1
+            |   ) as t6,
+            |   sum(t7) - (
+            |       select sum(quantity) as t7_sales 
+            |       from sale_products 
+            |       where size = 7 and product_id = $productId
+            |       group by product_id LIMIT 1
+            |   ) as t7,
+            |   sum(t8) - (
+            |       select sum(quantity) as t8_sales 
+            |       from sale_products 
+            |       where size = 8 and product_id = $productId
+            |       group by product_id LIMIT 1
+            |   ) as t8,
+            |   sum(t9) - (
+            |       select sum(quantity) as t9_sales 
+            |       from sale_products 
+            |       where size = 9 and product_id = $productId
+            |       group by product_id LIMIT 1
+            |   ) as t9,
+            |   sum(t10) - (
+            |       select sum(quantity) as t10_sales 
+            |       from sale_products 
+            |       where size = 10 and product_id = $productId
+            |       group by product_id LIMIT 1
+            |   ) as t10,
+            |   sum(t11) - (
+            |       select sum(quantity) as t11_sales 
+            |       from sale_products 
+            |       where size = 11 and product_id = $productId
+            |       group by product_id LIMIT 1
+            |   ) as t11
+            |   from stock_movements 
+            |   group by id, product_id
             """
         }
 
