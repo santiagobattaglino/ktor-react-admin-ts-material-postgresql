@@ -2,11 +2,10 @@ package jdbcat.ktor.example.db.dao
 
 import jdbcat.core.*
 import jdbcat.ktor.example.EntityNotFoundException
-import jdbcat.ktor.example.db.model.Stock
-import jdbcat.ktor.example.db.model.StockByUser
-import jdbcat.ktor.example.db.model.StockMovements
-import jdbcat.ktor.example.db.model.StockReport
+import jdbcat.ktor.example.db.model.*
+import jdbcat.ktor.example.util.setRange
 import mu.KotlinLogging
+import java.sql.Connection
 import java.sql.SQLException
 import javax.sql.DataSource
 
@@ -82,24 +81,83 @@ class StockDao(private val dataSource: DataSource) {
                 ?: throw EntityNotFoundException(errorMessage = "Stock id=$id cannot be found")
     }
 
-    suspend fun selectAll(range: List<Int>?, sort: List<String>?) =
-            dataSource.txRequired { connection ->
-                val stmt = selectAllSqlTemplate.prepareStatement(connection)
-                range?.let {
-                    stmt.setInt(1, it[1] - it[0] + 1) // LIMIT
-                    // OFFSET
-                    if (it[0] == 0) {
-                        stmt.setInt(2, it[0])
-                    } else {
-                        stmt.setInt(2, it[0] + 1)
-                    }
+    private fun buildSelectAllSqlTemplate(filter: Filter?, range: List<Int>?, sort: List<String>?, connection: Connection): TemplatizeStatement {
+        return if (sort != null) {
+            // TODO build filter and range
+            sqlTemplate(StockMovements) {
+                """
+                | SELECT *
+                |   FROM $tableName 
+                |   ORDER BY ${sort[0]} ${sort[1]}
+                |   LIMIT ? OFFSET ?
+                """
+            }.prepareStatement(connection)
+        } else {
+            sqlTemplate(StockMovements) {
+                """
+                | SELECT *
+                |   FROM $tableName 
+                |   ORDER BY $id DESC
+                |   LIMIT ? OFFSET ?
+                """
+            }.prepareStatement(connection)
+        }
+    }
+
+    suspend fun selectAll(filter: Filter?, range: List<Int>?, sort: List<String>?) = dataSource.txRequired { connection ->
+        var stmt: TemplatizeStatement = buildSelectAllSqlTemplate(filter, range, sort, connection)
+
+        range?.let { range ->
+            setRange(range, stmt)
+        }
+
+        filter?.let { filter ->
+            filter.productId?.let { productId ->
+                stmt = selectByProductIdSqlTemplate.prepareStatement(connection)
+                stmt.setColumns {
+                    it[StockMovements.productId] = productId
                 }
 
-                logger.debug { "selectAll(): $stmt" }
-                stmt.executeQuery().asSequence().map {
-                    Stock.extractFrom(it)
+                range?.let { range ->
+                    setRange(range, stmt, 2, 3)
                 }
             }
+
+            filter.userId?.let { userId ->
+                stmt = selectByUserIdSqlTemplate.prepareStatement(connection)
+                stmt.setColumns {
+                    it[StockMovements.userId] = userId
+                }
+
+                range?.let { range ->
+                    setRange(range, stmt, 2, 3)
+                }
+            }
+
+            if (filter.productId != null && filter.userId != null) {
+                stmt = selectByProductIdAndUserIdSqlTemplate.prepareStatement(connection)
+                stmt.setColumns {
+                    it[StockMovements.productId] = filter.productId
+                    it[StockMovements.userId] = filter.userId
+                }
+
+                range?.let { range ->
+                    setRange(range, stmt, 3, 4)
+                }
+            }
+
+            filter.id?.let { id ->
+                stmt = selectByIdsSqlTemplate.prepareStatement(connection)
+                stmt.setArray(1, connection.createArrayOf("INT", id.toTypedArray()))
+            }
+
+            logger.debug { "selectAll() by productId, userId, id paged: $stmt" }
+        }
+
+        stmt.executeQuery().asSequence().map {
+            Stock.extractFrom(it)
+        }
+    }
 
     suspend fun selectReport() =
             dataSource.txRequired { connection ->
@@ -111,7 +169,7 @@ class StockDao(private val dataSource: DataSource) {
             }
 
     suspend fun selectByUserId(userId: Int) = dataSource.txRequired { connection ->
-        val stmt = selectByUserIdSqlTemplate
+        val stmt = selectByUserIdSumSqlTemplate
                 .prepareStatement(connection)
                 .setColumns {
                     it[StockMovements.userId] = userId
@@ -174,7 +232,7 @@ class StockDao(private val dataSource: DataSource) {
             |   SUM(t4) AS t4, SUM(t5) AS t5, SUM(t6) AS t6, SUM(t7) AS t7, SUM(t8) AS t8, SUM(t9) AS t9,
             |   SUM(t10) AS t10, SUM(t11) AS t11,
             |   SUM(total) AS total, MAX(notes) AS notes, MAX(date_created) AS date_created
-            |   FROM $tableName 
+            |   FROM $tableName
             |   WHERE $productId = (SELECT $productId FROM $tableName WHERE $id = ${id.v})
             |   AND $userId = (SELECT $userId FROM $tableName WHERE $id = ${id.v})
             |   GROUP BY $productId, $userId
@@ -182,7 +240,7 @@ class StockDao(private val dataSource: DataSource) {
             "SELECT * FROM $tableName WHERE $id = ${id.v}"
         }
 
-        private val selectByUserIdSqlTemplate = sqlTemplate(StockMovements) {
+        private val selectByUserIdSumSqlTemplate = sqlTemplate(StockMovements) {
             """
             | SELECT MAX($id) AS ${id.name}, $productId, SUM(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) AS total 
             |   FROM $tableName 
@@ -195,89 +253,115 @@ class StockDao(private val dataSource: DataSource) {
         private val selectReportSqlTemplate = sqlTemplate(StockMovements) {
             """
             | select id, product_id,
-            |     sum(t1) - (
-            |       select sum(quantity) as t1_sales 
+            |   sum(t1) - COALESCE((
+            |      select sum(quantity) as t1_sales 
             |       from sale_products 
-            |       where size = 1 and product_id = $productId
+            |       where size = 1 and product_id = product_id
             |       group by product_id LIMIT 1
-            |   ) as t1,
-            |   sum(t2) - (
+            |   ), 0) as t1,
+            |   sum(t2) - COALESCE((
             |       select sum(quantity) as t2_sales 
             |       from sale_products 
-            |       where size = 2 and product_id = $productId
+            |       where size = 2 and product_id = product_id
             |       group by product_id LIMIT 1
-            |   ) as t2,
-            |   sum(t3) - (
+            |   ), 0) as t2,
+            |   sum(t3) - COALESCE((
             |       select sum(quantity) as t3_sales 
             |       from sale_products 
-            |       where size = 3 and product_id = $productId
+            |       where size = 3 and product_id = product_id
             |       group by product_id LIMIT 1
-            |   ) as t3,
-            |   sum(t4) - (
+            |   ), 0) as t3,
+            |   sum(t4) - COALESCE((
             |       select sum(quantity) as t4_sales 
             |       from sale_products 
-            |       where size = 4 and product_id = $productId
+            |       where size = 4 and product_id = product_id
             |       group by product_id LIMIT 1
-            |   ) as t4,
-            |   sum(t5) - (
+            |   ), 0) as t4,
+            |   sum(t5) - COALESCE((
             |       select sum(quantity) as t5_sales 
             |       from sale_products 
-            |       where size = 5 and product_id = $productId
+            |       where size = 5 and product_id = product_id
             |       group by product_id LIMIT 1
-            |   ) as t5,
-            |   sum(t6) - (
+            |   ), 0) as t5,
+            |   sum(t6) - COALESCE((
             |       select sum(quantity) as t6_sales 
             |       from sale_products 
-            |       where size = 6 and product_id = $productId
+            |       where size = 6 and product_id = product_id
             |       group by product_id LIMIT 1
-            |   ) as t6,
-            |   sum(t7) - (
+            |   ), 0) as t6,
+            |   sum(t7) - COALESCE((
             |       select sum(quantity) as t7_sales 
             |       from sale_products 
-            |       where size = 7 and product_id = $productId
+            |       where size = 7 and product_id = product_id
             |       group by product_id LIMIT 1
-            |   ) as t7,
-            |   sum(t8) - (
+            |   ), 0) as t7,
+            |   sum(t8) - COALESCE((
             |       select sum(quantity) as t8_sales 
             |       from sale_products 
-            |       where size = 8 and product_id = $productId
+            |       where size = 8 and product_id = product_id
             |       group by product_id LIMIT 1
-            |   ) as t8,
-            |   sum(t9) - (
+            |   ), 0) as t8,
+            |   sum(t9) - COALESCE((
             |       select sum(quantity) as t9_sales 
             |       from sale_products 
-            |       where size = 9 and product_id = $productId
+            |       where size = 9 and product_id = product_id
             |       group by product_id LIMIT 1
-            |   ) as t9,
-            |   sum(t10) - (
+            |   ), 0) as t9,
+            |   sum(t10) - COALESCE((
             |       select sum(quantity) as t10_sales 
             |       from sale_products 
-            |       where size = 10 and product_id = $productId
+            |       where size = 10 and product_id = product_id
             |       group by product_id LIMIT 1
-            |   ) as t10,
-            |   sum(t11) - (
+            |   ), 0) as t10,
+            |   sum(t11) - COALESCE((
             |       select sum(quantity) as t11_sales 
             |       from sale_products 
-            |       where size = 11 and product_id = $productId
+            |       where size = 11 and product_id = product_id
             |       group by product_id LIMIT 1
-            |   ) as t11
+            |   ), 0) as t11
             |   from stock_movements 
             |   group by id, product_id
             """
         }
 
-        private val selectAllSqlTemplate = sqlTemplate(StockMovements) {
-            /*"""
-            | SELECT MAX(id) AS id, product_id, user_id, SUM(t1) AS t1, SUM(t2) AS t2, SUM(t3) AS t3,
-            |   SUM(t4) AS t4, SUM(t5) AS t5, SUM(t6) AS t6, SUM(t7) AS t7, SUM(t8) AS t8, SUM(t9) AS t9,
-            |   SUM(t10) AS t10, SUM(t11) AS t11,
-            |   SUM(total) AS total, MAX(notes) AS notes, MAX(date_created) AS date_created
+        private val selectByIdsSqlTemplate = sqlTemplate(StockMovements) {
+            """
+            | SELECT *
             |   FROM $tableName 
-            |   GROUP BY $productId, $userId
-            |   ORDER BY $id
-            |   DESC LIMIT ? OFFSET ?
-            """*/
-            "SELECT * FROM $tableName ORDER BY $id DESC LIMIT ? OFFSET ?"
+            |   WHERE $id = ANY (?)
+            |   ORDER BY $id DESC
+            """
+        }
+
+        private val selectByProductIdAndUserIdSqlTemplate = sqlTemplate(StockMovements) {
+            """
+            | SELECT *
+            |   FROM $tableName 
+            |   WHERE $productId = ${productId.v}
+            |   AND $userId = ${userId.v}
+            |   ORDER BY $id DESC
+            |   LIMIT ? OFFSET ?
+            """
+        }
+
+        private val selectByProductIdSqlTemplate = sqlTemplate(StockMovements) {
+            """
+            | SELECT *
+            |   FROM $tableName 
+            |   WHERE $productId = ${productId.v}
+            |   ORDER BY $id DESC
+            |   LIMIT ? OFFSET ?
+            """
+        }
+
+        private val selectByUserIdSqlTemplate = sqlTemplate(StockMovements) {
+            """
+            | SELECT *
+            |   FROM $tableName 
+            |   WHERE $userId = ${userId.v}
+            |   ORDER BY $id DESC
+            |   LIMIT ? OFFSET ?
+            """
         }
 
         private val deleteById = sqlTemplate(StockMovements) {

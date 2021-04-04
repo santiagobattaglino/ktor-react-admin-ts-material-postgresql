@@ -23,7 +23,7 @@ const SaleProductsCreate = (props: any) => {
     return (
         <Create title='Nuevo SaleProduct' {...props}>
             <SimpleForm initialValues={{ saleId }} redirect={redirect}>
-                <ReferenceInput label="Producto" source="productId" reference="api/v1/products">
+                <ReferenceInput perPage={false} label="Producto" source="productId" reference="api/v1/products">
                     <SelectInput choices={productChoice} optionText={productRenderer} />
                 </ReferenceInput>
                 <TextInput source='size' />

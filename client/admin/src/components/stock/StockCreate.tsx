@@ -5,13 +5,13 @@ const choices = [
     { id: 1, name: 'name', },
     { id: 2, name: 'name' }
  ];
- const optionRenderer = choice => `${choice.id} ${choice.name}`;
+ const optionRenderer = (choice: any) => `${choice.id} ${choice.name}`;
 
 const StockCreate = (props: any) => {
     return (
         <Create title='Nuevo Movimiento de Stock' {...props}>
             <SimpleForm redirect="list">
-                <ReferenceInput label="Producto" source="productId" reference="api/v1/products">
+                <ReferenceInput perPage={false} label="Producto" source="productId" reference="api/v1/products">
                     <SelectInput choices={choices} optionText={optionRenderer} />
                 </ReferenceInput>
                 <ReferenceInput label="Usuario" source="userId" reference="api/v1/users" sortBy="firstName">

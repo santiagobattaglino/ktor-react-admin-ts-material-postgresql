@@ -5,7 +5,9 @@ import jdbcat.ktor.example.EntityNotFoundException
 import jdbcat.ktor.example.db.model.Filter
 import jdbcat.ktor.example.db.model.Product
 import jdbcat.ktor.example.db.model.Products
+import jdbcat.ktor.example.util.setRange
 import mu.KotlinLogging
+import java.sql.Connection
 import javax.sql.DataSource
 
 class ProductDao(private val dataSource: DataSource) {
@@ -75,16 +77,33 @@ class ProductDao(private val dataSource: DataSource) {
                 ?: throw EntityNotFoundException(errorMessage = "Product id=$id cannot be found")
     }
 
+    private fun buildSelectAllSqlTemplate(sort: List<String>?, connection: Connection): TemplatizeStatement {
+        return if (sort != null) {
+            sqlTemplate(Products) {
+                """
+                | SELECT *
+                |   FROM $tableName 
+                |   ORDER BY ${sort[0]} ${sort[1]}
+                |   LIMIT ? OFFSET ?
+                """
+            }.prepareStatement(connection)
+        } else {
+            sqlTemplate(Products) {
+                """
+                | SELECT *
+                |   FROM $tableName 
+                |   ORDER BY $id DESC
+                |   LIMIT ? OFFSET ?
+                """
+            }.prepareStatement(connection)
+        }
+    }
+
     suspend fun selectAll(filter: Filter?, range: List<Int>?, sort: List<String>?) = dataSource.txRequired { connection ->
-        var stmt: TemplatizeStatement = selectAllSqlTemplate.prepareStatement(connection)
+        var stmt: TemplatizeStatement = buildSelectAllSqlTemplate(sort, connection)
 
         range?.let { range ->
-            stmt.setInt(1, range[1] - range[0] + 1)
-            if (range[0] == 0) {
-                stmt.setInt(2, range[0])
-            } else {
-                stmt.setInt(2, range[0] + 1)
-            }
+            setRange(range, stmt)
             logger.debug { "selectAll() paged: $stmt" }
         }
 
@@ -96,14 +115,9 @@ class ProductDao(private val dataSource: DataSource) {
                         }
 
                 range?.let { range ->
-                    stmt.setInt(2, range[1] - range[0] + 1)
-                    if (range[0] == 0) {
-                        stmt.setInt(3, range[0])
-                    } else {
-                        stmt.setInt(3, range[0] + 1)
-                    }
+                    setRange(range, stmt, 2, 3)
+                    logger.debug { "selectAll() by catId, paged: $stmt" }
                 }
-                logger.debug { "selectAll() by catId, paged: $stmt" }
             }
 
             filter.q?.let {
@@ -113,21 +127,16 @@ class ProductDao(private val dataSource: DataSource) {
                 stmt.setString(2, "%$it%")
 
                 range?.let { range ->
-                    stmt.setInt(3, range[1] - range[0] + 1)
-                    if (range[0] == 0) {
-                        stmt.setInt(4, range[0])
-                    } else {
-                        stmt.setInt(4, range[0] + 1)
-                    }
+                    setRange(range, stmt, 3, 4)
+                    logger.debug { "selectAll() by query, paged: $stmt" }
                 }
-                logger.debug { "selectAll() by query, paged: $stmt" }
             }
 
             filter.id?.let { id ->
                 stmt = selectByIdsSqlTemplate.prepareStatement(connection)
 
                 stmt.setArray(1, connection.createArrayOf("INT", id.toTypedArray()))
-                logger.debug { "selectAll() by ANY(ids), paged: $stmt" }
+                logger.debug { "selectAll() by ANY(ids): $stmt" }
             }
         }
 
@@ -177,15 +186,6 @@ class ProductDao(private val dataSource: DataSource) {
             | UPDATE $tableName
             |   SET ${(columns - id - dateCreated).sqlAssignNamesToValues}
             |   WHERE $id = ${id.v}
-            """
-        }
-
-        private val selectAllSqlTemplate = sqlTemplate(Products) {
-            """
-            | SELECT *
-            |   FROM $tableName 
-            |   ORDER BY $id DESC
-            |   LIMIT ? OFFSET ?
             """
         }
 

@@ -11,7 +11,7 @@ const StockEdit = (props: any) => {
     return (
         <Edit title='Editar Movimiento de Stock' {...props}>
             <SimpleForm redirect="list">
-                <ReferenceInput label="Producto" source="productId" reference="api/v1/products">
+                <ReferenceInput perPage={false} label="Producto" source="productId" reference="api/v1/products">
                     <SelectInput choices={choices} optionText={optionRenderer} />
                 </ReferenceInput>
                 <ReferenceInput label="Usuario" source="userId" reference="api/v1/users" sortBy="firstName">

@@ -52,7 +52,7 @@ fun Route.stockRoute() {
             }
             dataSource.tx { _ ->
                 val stockMovementsResponse = stockDao
-                    .selectAll(range = range, sort = sort)
+                    .selectAll(filter = filter, range = range, sort = sort)
                     .map { StockResponse.fromEntity(it) }
                     .toList()
                 call.response.header("X-Total-Count", stockDao.countAll())
