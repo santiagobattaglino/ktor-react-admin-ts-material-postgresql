@@ -252,75 +252,75 @@ class StockDao(private val dataSource: DataSource) {
 
         private val selectReportSqlTemplate = sqlTemplate(StockMovements) {
             """
-            | select id, product_id,
+            | select product_id as id, product_id,
             |   sum(t1) - COALESCE((
-            |      select sum(quantity) as t1_sales 
+            |      select sum(quantity)
             |       from sale_products 
-            |       where size = 1 and product_id = product_id
+            |       where size = 1 and sale_products.product_id = stock_movements.product_id
             |       group by product_id LIMIT 1
             |   ), 0) as t1,
             |   sum(t2) - COALESCE((
-            |       select sum(quantity) as t2_sales 
+            |       select sum(quantity)
             |       from sale_products 
-            |       where size = 2 and product_id = product_id
+            |       where size = 2 and sale_products.product_id = stock_movements.product_id
             |       group by product_id LIMIT 1
             |   ), 0) as t2,
             |   sum(t3) - COALESCE((
-            |       select sum(quantity) as t3_sales 
+            |       select sum(quantity)
             |       from sale_products 
-            |       where size = 3 and product_id = product_id
+            |       where size = 3 and sale_products.product_id = stock_movements.product_id
             |       group by product_id LIMIT 1
             |   ), 0) as t3,
             |   sum(t4) - COALESCE((
-            |       select sum(quantity) as t4_sales 
+            |       select sum(quantity)
             |       from sale_products 
-            |       where size = 4 and product_id = product_id
+            |       where size = 4 and sale_products.product_id = stock_movements.product_id
             |       group by product_id LIMIT 1
             |   ), 0) as t4,
             |   sum(t5) - COALESCE((
-            |       select sum(quantity) as t5_sales 
+            |       select sum(quantity)
             |       from sale_products 
-            |       where size = 5 and product_id = product_id
+            |       where size = 5 and sale_products.product_id = stock_movements.product_id
             |       group by product_id LIMIT 1
             |   ), 0) as t5,
             |   sum(t6) - COALESCE((
-            |       select sum(quantity) as t6_sales 
+            |       select sum(quantity)
             |       from sale_products 
-            |       where size = 6 and product_id = product_id
+            |       where size = 6 and sale_products.product_id = stock_movements.product_id
             |       group by product_id LIMIT 1
             |   ), 0) as t6,
             |   sum(t7) - COALESCE((
-            |       select sum(quantity) as t7_sales 
+            |       select sum(quantity)
             |       from sale_products 
-            |       where size = 7 and product_id = product_id
+            |       where size = 7 and sale_products.product_id = stock_movements.product_id
             |       group by product_id LIMIT 1
             |   ), 0) as t7,
             |   sum(t8) - COALESCE((
-            |       select sum(quantity) as t8_sales 
+            |       select sum(quantity)
             |       from sale_products 
-            |       where size = 8 and product_id = product_id
+            |       where size = 8 and sale_products.product_id = stock_movements.product_id
             |       group by product_id LIMIT 1
             |   ), 0) as t8,
             |   sum(t9) - COALESCE((
-            |       select sum(quantity) as t9_sales 
+            |       select sum(quantity)
             |       from sale_products 
-            |       where size = 9 and product_id = product_id
+            |       where size = 9 and sale_products.product_id = stock_movements.product_id
             |       group by product_id LIMIT 1
             |   ), 0) as t9,
             |   sum(t10) - COALESCE((
-            |       select sum(quantity) as t10_sales 
+            |       select sum(quantity)
             |       from sale_products 
-            |       where size = 10 and product_id = product_id
+            |       where size = 10 and sale_products.product_id = stock_movements.product_id
             |       group by product_id LIMIT 1
             |   ), 0) as t10,
             |   sum(t11) - COALESCE((
-            |       select sum(quantity) as t11_sales 
+            |       select sum(quantity)
             |       from sale_products 
-            |       where size = 11 and product_id = product_id
+            |       where size = 11 and sale_products.product_id = stock_movements.product_id
             |       group by product_id LIMIT 1
             |   ), 0) as t11
             |   from stock_movements 
-            |   group by id, product_id
+            |   group by stock_movements.product_id
             |   order by product_id DESC
             """
         }
