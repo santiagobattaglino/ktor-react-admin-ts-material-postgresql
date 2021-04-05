@@ -43,79 +43,101 @@ const catComponent = (props: any) => (
     </ReferenceArrayField>
 );
 
+/*
+<List...
+    {isSmall ? (
+        <SimpleList
+            primaryText={(record: any) => `${record.id} ${record.name}`}
+            secondaryText={(record: any) => {
+                <ReferenceField label="Categoría" source="catId" reference="api/v1/categories" sortBy="name" record={record}>
+                    <TextField source="name" />
+                </ReferenceField>
+            }}
+            tertiaryText={(record: any) => catComponent}
+            linkType={(record: any) => record.canEdit ? "edit" : "show"}
+            rowStyle={productRowStyle}>
+        </SimpleList>
+    ) : (
+        <Datagrid>
+        </Datagrid>
+    )}
+</List>
+*/
 const ProdList = (props: any) => {
     const isSmall = useMediaQuery((theme: any) => theme.breakpoints.down('sm'));
     return (
         <List title="Productos" filters={<ProdFilter />} {...props} perPage={25} sort={{ field: 'id', order: 'DESC' }}>
-            {isSmall ? (
-                <SimpleList
-                    primaryText={(record: any) => `${record.id} ${record.name}`}
-                    secondaryText={(record: any) => {
-                        <ReferenceField label="Categoría" source="catId" reference="api/v1/categories" sortBy="name" record={record}>
-                            <TextField source="name" />
-                        </ReferenceField>
-                    }}
-                    tertiaryText={(record: any) => catComponent}
-                    linkType={(record: any) => record.canEdit ? "edit" : "show"}
-                    rowStyle={productRowStyle}>
-                </SimpleList>
-            ) : (
-                <Datagrid>
-                    <TextField source='id' label='SKU' />
-                    <FunctionField
-                        source='photoId'
-                        label="Foto"
-                        sortable={false}
-                        render={(record: any) => {
-                            if (record.photoId !== null) {
-                                return (
-                                    <img src={`https://lh3.google.com/u/0/d/${record.photoId}=w80-h80`} alt={record.name} />
-                                );
-                            } else {
-                                return (
-                                    <p>Sin Foto</p>
-                                );
-                            }
-                        }}
-                    />
-
-                    <ReferenceField label="Categoría" source="catId" reference="api/v1/categories" sortBy="cat_id">
-                        <TextField source="name" />
-                    </ReferenceField>
-                    <TextField source='name' label='Nombre' />
-                    <TextField source='material' label='Material' />
-                    <ReferenceField label="Color/Estampa" source="colorId" reference="api/v1/colors" sortBy="color_id">
-                        <TextField source="name" />
-                    </ReferenceField>
-                    <TextField source='manufacturingCost' sortBy="manufacturing_cost" label='Costo' />
-                    <FunctionField
-                        source='mayor'
-                        sortable={false}
-                        label="X Mayor"
-                        render={
-                            (record: any) => `${Math.round(record.manufacturingCost * 1.8)}`
+            <Datagrid>
+                <TextField source='id' label='SKU' />
+                <FunctionField
+                    source='photoId'
+                    label="Foto"
+                    sortable={false}
+                    render={(record: any) => {
+                        if (record.photoId !== null) {
+                            return (
+                                <img src={`https://lh3.google.com/u/0/d/${record.photoId}=w80-h80`} alt={record.name} />
+                            );
+                        } else {
+                            return (
+                                <p>Sin Foto</p>
+                            );
                         }
-                    />
-                    <FunctionField
-                        sortable={false}
-                        source='capilla'
-                        label="Precio Capilla" render={
-                            (record: any) => `${Math.round((record.manufacturingCost * 1.8) * 1.3)}`}
-                    />
-                    <FunctionField
-                        sortable={false}
-                        source='menor'
-                        label="X Menor"
-                        render={
-                            (record: any) => `${Math.round((record.manufacturingCost * 1.8) * 2)}`}
-                    />
+                    }}
+                />
 
-                    <DateField source="dateCreated" sortBy="date_created" />
+                <ReferenceField label="Categoría" source="catId" reference="api/v1/categories" sortBy="cat_id">
+                    <TextField source="name" />
+                </ReferenceField>
+                <TextField source='name' label='Nombre' />
+                <TextField source='material' label='Material' />
+                <ReferenceField label="Color/Estampa" source="colorId" reference="api/v1/colors" sortBy="color_id">
+                    <TextField source="name" />
+                </ReferenceField>
+                <TextField source='manufacturingCost' sortBy="manufacturing_cost" label='Costo' />
+                <FunctionField
+                    source='mayor'
+                    sortable={false}
+                    label="X Mayor"
+                    render={
+                        (record: any) => `${Math.round(record.manufacturingCost * 1.8)}`
+                    }
+                />
+                <FunctionField
+                    sortable={false}
+                    source='capilla'
+                    label="Precio Capilla" render={
+                        (record: any) => `${Math.round((record.manufacturingCost * 1.8) * 1.3)}`}
+                />
+                <FunctionField
+                    sortable={false}
+                    source='menor'
+                    label="X Menor"
+                    render={
+                        (record: any) => `${Math.round((record.manufacturingCost * 1.8) * 2)}`}
+                />
 
-                    <EditButton basePath='products' undoable={true} />
-                    <DeleteButton basePath='products' undoable={true} />
-                </Datagrid>
-            )}
+                <FunctionField
+                    source='idMl'
+                    label="ML"
+                    sortable={false}
+                    render={(record: any) => {
+                        if (record.mlId !== null) {
+                            return (
+                                <a href={`https://articulo.mercadolibre.com.ar/MLA-${record.idMl}`} target="_blank">{record.idMl}</a>
+                            );
+                        } else {
+                            return (
+                                <p>No Publicado</p>
+                            );
+                        }
+                    }}
+                />
+                <DateField source="dateCreated" sortBy="date_created" />
+
+                <EditButton basePath='products' undoable={true} />
+                <DeleteButton basePath='products' undoable={true} />
+            </Datagrid>
         </List>
     )
 }

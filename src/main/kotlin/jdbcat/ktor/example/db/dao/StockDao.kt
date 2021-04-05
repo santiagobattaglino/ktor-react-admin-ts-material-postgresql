@@ -321,6 +321,7 @@ class StockDao(private val dataSource: DataSource) {
             |   ), 0) as t11
             |   from stock_movements 
             |   group by id, product_id
+            |   order by product_id DESC
             """
         }
 
