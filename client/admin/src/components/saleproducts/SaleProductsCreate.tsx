@@ -1,5 +1,5 @@
 import React from 'react'
-import { Create, SimpleForm, TextInput, ReferenceInput, SelectInput } from 'react-admin'
+import { Create, SimpleForm, TextInput, ReferenceInput, SelectInput, AutocompleteInput } from 'react-admin'
 import { parse } from 'query-string';
 
 const productChoice = [
@@ -7,34 +7,28 @@ const productChoice = [
 ];
 const productRenderer = (productChoice: any) => `${productChoice.id} ${productChoice.name}`;
 
-const optionChoice = [
-    { id: 1, type: 'type', name: 'name' }
-];
-const optionRenderer = (optionChoice: any) => `${optionChoice.type} - ${optionChoice.name}`;
-
 const SaleProductsCreate = (props: any) => {
     const { saleId: saleId_string } = parse(props.location.search);
     const saleId = saleId_string ? parseInt(saleId_string, 10) : '';
-    console.log(saleId)
     const redirect = saleId ? `/api/v1/sales/${saleId}/products` : 'list';
-    console.log(redirect)
+    const initialValues = () => ({ saleId: saleId, paymentMethodId: 6, priceId: 10 });
 
     return (
         <Create title='Nuevo SaleProduct' {...props}>
-            <SimpleForm initialValues={{ saleId }} redirect={redirect}>
+            <SimpleForm initialValues={initialValues} redirect={redirect}>
                 <ReferenceInput perPage={false} label="Venta" source="saleId" reference="api/v1/sales">
                     <SelectInput optionText="id" />
                 </ReferenceInput>
                 <ReferenceInput perPage={false} label="Producto" source="productId" reference="api/v1/products">
-                    <SelectInput choices={productChoice} optionText={productRenderer} />
+                    <AutocompleteInput choices={productChoice} optionText={productRenderer} />
                 </ReferenceInput>
                 <TextInput source='size' />
                 <TextInput source='quantity' />
-                <ReferenceInput label="Método de Pago" source="paymentMethodId" reference="api/v1/options">
-                    <SelectInput choices={optionChoice} optionText={optionRenderer} fullWidth />
+                <ReferenceInput label="Método de Pago" source="paymentMethodId" reference="api/v1/options/type/paymentMethod">
+                    <SelectInput optionText="name" />
                 </ReferenceInput>
-                <ReferenceInput label="Precio" source="priceId" reference="api/v1/options">
-                    <SelectInput choices={optionChoice} optionText={optionRenderer} fullWidth />
+                <ReferenceInput label="Precio" source="priceId" reference="api/v1/options/type/price">
+                    <SelectInput optionText="name" />
                 </ReferenceInput>
                 <TextInput source='customPrice' />
                 <TextInput source='notes' />

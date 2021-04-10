@@ -2,6 +2,10 @@ package jdbcat.ktor.example.route.v1.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import jdbcat.ktor.example.db.model.Product
+import jdbcat.ktor.example.util.precioCapilla
+import jdbcat.ktor.example.util.precioMayor
+import jdbcat.ktor.example.util.precioMenor
+import jdbcat.ktor.example.util.precioMl
 import java.util.*
 
 data class CreateProductRequest(
@@ -67,6 +71,10 @@ data class ProductResponse(
         val idMl: Int?,
         val priceId: Int,
         val manufacturingCost: Int,
+        val precioMayor: Int,
+        val precioCapilla: Int,
+        val precioMenor: Int,
+        val precioMl: Int,
         val photoId: String?,
         val notes: String?,
         val dateCreated: Date
@@ -82,6 +90,10 @@ data class ProductResponse(
                         idMl = entity.idMl,
                         priceId = entity.priceId,
                         manufacturingCost = entity.manufacturingCost,
+                        precioMayor = precioMayor(entity.manufacturingCost),
+                        precioCapilla = precioCapilla(entity.manufacturingCost),
+                        precioMenor = precioMenor(entity.manufacturingCost),
+                        precioMl = precioMl(entity.manufacturingCost),
                         photoId = entity.photoId,
                         notes = entity.notes,
                         dateCreated = entity.dateCreated

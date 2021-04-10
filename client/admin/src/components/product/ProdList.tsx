@@ -1,5 +1,3 @@
-import { useMediaQuery } from '@material-ui/core';
-import React from 'react'
 import {
     Datagrid,
     DeleteButton,
@@ -20,8 +18,8 @@ import {
 
 const ProdFilter = (props) => (
     <Filter {...props}>
-        <TextInput label="Search" source="q" alwaysOn />
-        <ReferenceInput label="Categoría" source="catId" reference="api/v1/categories" allowEmpty>
+        <TextInput label="Search" source="q" alwaysOn allowEmpty />
+        <ReferenceInput label="Categoría" source="catId" reference="api/v1/categories" alwaysOn allowEmpty>
             <SelectInput optionText="name" />
         </ReferenceInput>
     </Filter>
@@ -72,29 +70,11 @@ const ProdList = (props: any) => {
                 <ReferenceField label="Color/Estampa" source="colorId" reference="api/v1/colors" sortBy="color_id">
                     <TextField source="name" />
                 </ReferenceField>
-                <TextField source='manufacturingCost' sortBy="manufacturing_cost" label='Costo' />
-                <FunctionField
-                    source='mayor'
-                    sortable={false}
-                    label="X Mayor"
-                    render={
-                        (record: any) => `${Math.round(record.manufacturingCost * 1.8)}`
-                    }
-                />
-                <FunctionField
-                    sortable={false}
-                    source='capilla'
-                    label="Precio Capilla" render={
-                        (record: any) => `${Math.round((record.manufacturingCost * 1.8) * 1.3)}`}
-                />
-                <FunctionField
-                    sortable={false}
-                    source='menor'
-                    label="X Menor"
-                    render={
-                        (record: any) => `${Math.round((record.manufacturingCost * 1.8) * 2)}`}
-                />
-
+                <TextField source='manufacturingCost' label='Costo' />
+                <TextField source='precioMayor' sortBy="manufacturing_cost" label='Mayor' />
+                <TextField source='precioCapilla' sortBy="manufacturing_cost" label='Capilla' />
+                <TextField source='precioMenor' sortBy="manufacturing_cost" label='Menor' />
+                <TextField source='precioMl' sortBy="manufacturing_cost" label='ML' />
                 <FunctionField
                     source='idMl'
                     label="ML"
@@ -121,6 +101,30 @@ const ProdList = (props: any) => {
 }
 
 /*
+// TODO remove this, just for reference on how to use FunctionFields
+<FunctionField
+                    source='mayor'
+                    sortable={false}
+                    label="X Mayor"
+                    render={
+                        (record: any) => `${Math.round(record.manufacturingCost * 1.8)}`
+                    }
+                />
+                <FunctionField
+                    sortable={false}
+                    source='capilla'
+                    label="Precio Capilla" render={
+                        (record: any) => `${Math.round((record.manufacturingCost * 1.8) * 1.3)}`}
+                />
+                <FunctionField
+                    sortable={false}
+                    source='menor'
+                    label="X Menor"
+                    render={
+                        (record: any) => `${Math.round((record.manufacturingCost * 1.8) * 2)}`}
+                />
+/*
+
 TODO media query to print and mobile
 const isSmall = useMediaQuery((theme: any) => theme.breakpoints.down('sm'));
 <List...

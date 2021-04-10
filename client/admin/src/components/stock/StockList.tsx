@@ -34,15 +34,7 @@ const StockList = (props: any) => {
     return (
         <List title="Stock" filters={<Filters />} {...props} perPage={25} sort={{ field: 'id', order: 'DESC' }}>
             <Datagrid>
-                <TextField source='id' label='id' />
-                <ReferenceField label="Producto" source="productId" reference="api/v1/products" sortBy="product_id">
-                    <FunctionField
-                        label="Nombre"
-                        render={(record: any) => `SKU ${record.id} - ${record.name}`}
-                    />
-                </ReferenceField>
-
-                <ReferenceField label="Producto" source="productId" reference="api/v1/products" sortBy="product_id">
+                <ReferenceField label="Foto" source="productId" reference="api/v1/products" sortBy="product_id">
                     <FunctionField
                         source='photoId'
                         label="Foto"
@@ -60,7 +52,12 @@ const StockList = (props: any) => {
                         }}
                     />
                 </ReferenceField>
-
+                <ReferenceField label="Producto" source="productId" reference="api/v1/products" sortBy="product_id">
+                    <FunctionField
+                        label="Nombre"
+                        render={(record: any) => `SKU ${record.id} - ${record.name}`}
+                    />
+                </ReferenceField>
                 <ReferenceField label="Usuario" source="userId" reference="api/v1/users" sortBy="user_id">
                     <TextField source="firstName" />
                 </ReferenceField>

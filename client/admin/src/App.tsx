@@ -106,6 +106,9 @@ function App() {
                 options={{ label: 'Reporte' }}
                 list={ReportList}
             />
+            <Resource name='api/v1/options/type/paymentMethod' />
+            <Resource name='api/v1/options/type/price' />
+            <Resource name='api/v1/options/type/rol' />
         </Admin>
     );
 }
