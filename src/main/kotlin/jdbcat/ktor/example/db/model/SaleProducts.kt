@@ -55,8 +55,8 @@ data class SaleProduct(
                 paymentMethodId = extractor[SaleProducts.paymentMethodId],
                 priceId = extractor[SaleProducts.priceId],
                 customPrice = extractor[SaleProducts.customPrice],
-                notes = extractor[StockMovements.notes],
-                dateCreated = extractor[StockMovements.dateCreated]
+                notes = extractor[SaleProducts.notes],
+                dateCreated = extractor[SaleProducts.dateCreated]
         )
     }
 }

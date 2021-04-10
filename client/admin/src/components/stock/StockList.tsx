@@ -42,6 +42,25 @@ const StockList = (props: any) => {
                     />
                 </ReferenceField>
 
+                <ReferenceField label="Producto" source="productId" reference="api/v1/products" sortBy="product_id">
+                    <FunctionField
+                        source='photoId'
+                        label="Foto"
+                        sortable={false}
+                        render={(record: any) => {
+                            if (record.photoId !== null) {
+                                return (
+                                    <img src={`https://lh3.google.com/u/0/d/${record.photoId}=w80-h80`} alt={record.name} />
+                                );
+                            } else {
+                                return (
+                                    <p>Sin Foto</p>
+                                );
+                            }
+                        }}
+                    />
+                </ReferenceField>
+
                 <ReferenceField label="Usuario" source="userId" reference="api/v1/users" sortBy="user_id">
                     <TextField source="firstName" />
                 </ReferenceField>

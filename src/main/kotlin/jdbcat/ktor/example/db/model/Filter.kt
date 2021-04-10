@@ -6,6 +6,8 @@ data class Filter(
         val saleId: Int?,
         val productId: Int?,
         val userId: Int?,
+        val clientId: Int?,
+        val sellerId: Int?,
         val catId: Int?,
         val q: String?
 )

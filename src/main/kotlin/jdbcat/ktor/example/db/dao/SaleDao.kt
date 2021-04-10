@@ -2,9 +2,12 @@ package jdbcat.ktor.example.db.dao
 
 import jdbcat.core.*
 import jdbcat.ktor.example.EntityNotFoundException
+import jdbcat.ktor.example.db.model.Filter
 import jdbcat.ktor.example.db.model.Sale
 import jdbcat.ktor.example.db.model.Sales
+import jdbcat.ktor.example.util.setRange
 import mu.KotlinLogging
+import java.sql.Connection
 import javax.sql.DataSource
 
 class SaleDao(private val dataSource: DataSource) {
@@ -74,19 +77,69 @@ class SaleDao(private val dataSource: DataSource) {
                 ?: throw EntityNotFoundException(errorMessage = "Sale id=$id cannot be found")
     }
 
-    suspend fun selectAll(range: List<Int>?, sort: List<String>?) = dataSource.txRequired { connection ->
-        val stmt = selectAllSqlTemplate.prepareStatement(connection)
-        range?.let {
-            stmt.setInt(1, it[1] - it[0] + 1) // LIMIT
-            // OFFSET
-            if (it[0] == 0) {
-                stmt.setInt(2, it[0])
-            } else {
-                stmt.setInt(2, it[0] + 1)
+    private fun buildSelectAllSqlTemplate(sort: List<String>?, connection: Connection): TemplatizeStatement {
+        return if (sort != null) {
+            sqlTemplate(Sales) {
+                """
+                | SELECT *
+                |   FROM $tableName 
+                |   ORDER BY ${sort[0]} ${sort[1]}
+                |   LIMIT ? OFFSET ?
+                """
+            }.prepareStatement(connection)
+        } else {
+            sqlTemplate(Sales) {
+                """
+                | SELECT *
+                |   FROM $tableName 
+                |   ORDER BY $id DESC
+                |   LIMIT ? OFFSET ?
+                """
+            }.prepareStatement(connection)
+        }
+    }
+
+    suspend fun selectAll(filter: Filter?, range: List<Int>?, sort: List<String>?) = dataSource.txRequired { connection ->
+        var stmt: TemplatizeStatement = buildSelectAllSqlTemplate(sort, connection)
+
+        range?.let { range ->
+            setRange(range, stmt)
+            logger.debug { "selectAll() paged: $stmt" }
+        }
+
+        filter?.let { filter ->
+            filter.sellerId?.let { sellerId ->
+                stmt = selectBySellerIdSqlTemplate.prepareStatement(connection)
+                        .setColumns {
+                            it[Sales.sellerId] = sellerId
+                        }
+
+                range?.let { range ->
+                    setRange(range, stmt, 2, 3)
+                    logger.debug { "selectAll() by sellerId, paged: $stmt" }
+                }
+            }
+
+            filter.q?.let {
+                stmt = selectByQueryIdSqlTemplate.prepareStatement(connection)
+
+                stmt.setString(1, "%$it%")
+                stmt.setString(2, "%$it%")
+
+                range?.let { range ->
+                    setRange(range, stmt, 3, 4)
+                    logger.debug { "selectAll() by query, paged: $stmt" }
+                }
+            }
+
+            filter.id?.let { id ->
+                stmt = selectByIdsSqlTemplate.prepareStatement(connection)
+
+                stmt.setArray(1, connection.createArrayOf("INT", id.toTypedArray()))
+                logger.debug { "selectAll() by ANY(ids): $stmt" }
             }
         }
 
-        logger.debug { "selectAll(): $stmt" }
         stmt.executeQuery().asSequence().map {
             Sale.extractFrom(it)
         }
@@ -140,8 +193,34 @@ class SaleDao(private val dataSource: DataSource) {
             "SELECT * FROM $tableName WHERE $id = ${id.v}"
         }
 
-        private val selectAllSqlTemplate = sqlTemplate(Sales) {
-            "SELECT * FROM $tableName ORDER BY $id DESC LIMIT ? OFFSET ?"
+        private val selectBySellerIdSqlTemplate = sqlTemplate(Sales) {
+            """
+            | SELECT *
+            |   FROM $tableName 
+            |   WHERE $sellerId = ${sellerId.v}
+            |   ORDER BY $id DESC
+            |   LIMIT ? OFFSET ?
+            """
+        }
+
+        private val selectByQueryIdSqlTemplate = sqlTemplate(Sales) {
+            """
+            | SELECT *
+            |   FROM $tableName 
+            |   WHERE CAST($id AS TEXT) ILIKE ?
+            |   OR name ILIKE ?
+            |   ORDER BY $id DESC
+            |   LIMIT ? OFFSET ?
+            """
+        }
+
+        private val selectByIdsSqlTemplate = sqlTemplate(Sales) {
+            """
+            | SELECT *
+            |   FROM $tableName 
+            |   WHERE $id = ANY (?)
+            |   ORDER BY $id DESC
+            """
         }
 
         private val deleteById = sqlTemplate(Sales) {

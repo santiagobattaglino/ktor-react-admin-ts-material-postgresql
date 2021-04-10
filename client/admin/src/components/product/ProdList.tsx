@@ -13,7 +13,6 @@ import {
     ReferenceInput,
     SelectInput,
     Filter,
-    SimpleList,
     ReferenceArrayField,
     SingleFieldList,
     ChipField
@@ -43,28 +42,7 @@ const catComponent = (props: any) => (
     </ReferenceArrayField>
 );
 
-/*
-<List...
-    {isSmall ? (
-        <SimpleList
-            primaryText={(record: any) => `${record.id} ${record.name}`}
-            secondaryText={(record: any) => {
-                <ReferenceField label="Categoría" source="catId" reference="api/v1/categories" sortBy="name" record={record}>
-                    <TextField source="name" />
-                </ReferenceField>
-            }}
-            tertiaryText={(record: any) => catComponent}
-            linkType={(record: any) => record.canEdit ? "edit" : "show"}
-            rowStyle={productRowStyle}>
-        </SimpleList>
-    ) : (
-        <Datagrid>
-        </Datagrid>
-    )}
-</List>
-*/
 const ProdList = (props: any) => {
-    const isSmall = useMediaQuery((theme: any) => theme.breakpoints.down('sm'));
     return (
         <List title="Productos" filters={<ProdFilter />} {...props} perPage={25} sort={{ field: 'id', order: 'DESC' }}>
             <Datagrid>
@@ -141,5 +119,28 @@ const ProdList = (props: any) => {
         </List>
     )
 }
+
+/*
+TODO media query to print and mobile
+const isSmall = useMediaQuery((theme: any) => theme.breakpoints.down('sm'));
+<List...
+    {isSmall ? (
+        <SimpleList
+            primaryText={(record: any) => `${record.id} ${record.name}`}
+            secondaryText={(record: any) => {
+                <ReferenceField label="Categoría" source="catId" reference="api/v1/categories" sortBy="name" record={record}>
+                    <TextField source="name" />
+                </ReferenceField>
+            }}
+            tertiaryText={(record: any) => catComponent}
+            linkType={(record: any) => record.canEdit ? "edit" : "show"}
+            rowStyle={productRowStyle}>
+        </SimpleList>
+    ) : (
+        <Datagrid>
+        </Datagrid>
+    )}
+</List>
+*/
 
 export default ProdList

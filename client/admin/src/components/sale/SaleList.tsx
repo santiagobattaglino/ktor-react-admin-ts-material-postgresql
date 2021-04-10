@@ -3,7 +3,7 @@ import { Datagrid, DeleteButton, EditButton, List, TextField, ReferenceField, Da
 
 const SaleList = (props: any) => {
     return (
-        <List title="Sales" {...props} perPage={25}>
+        <List title="Sales" {...props} perPage={25} sort={{ field: 'id', order: 'DESC' }}>
             <Datagrid>
                 <TextField source='id' label='id' />
                 <ReferenceField label="Lugar de Venta / Vendedor" source="sellerId" reference="api/v1/users" sortBy="firstName">
