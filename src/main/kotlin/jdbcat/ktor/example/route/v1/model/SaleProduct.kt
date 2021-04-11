@@ -9,8 +9,6 @@ data class CreateSaleProductRequest(
         val productId: Int,
         val size: Int,
         val quantity: Int,
-        val paymentMethodId: Int,
-        val priceId: Int,
         val customPrice: Int?,
         val notes: String?
 ) {
@@ -20,8 +18,6 @@ data class CreateSaleProductRequest(
             productId = productId,
             size = size,
             quantity = quantity,
-            paymentMethodId = paymentMethodId,
-            priceId = priceId,
             customPrice = customPrice,
             notes = notes,
             dateCreated = Date()
@@ -34,8 +30,6 @@ data class EditSaleProductRequest(
         val productId: Int,
         val size: Int,
         val quantity: Int,
-        val paymentMethodId: Int,
-        val priceId: Int,
         val customPrice: Int?,
         val notes: String?
 ) {
@@ -45,8 +39,6 @@ data class EditSaleProductRequest(
             productId = productId,
             size = size,
             quantity = quantity,
-            paymentMethodId = paymentMethodId,
-            priceId = priceId,
             customPrice = customPrice,
             notes = notes,
             dateCreated = Date()
@@ -59,8 +51,6 @@ data class SaleProductResponse(
         val productId: Int,
         val size: Int,
         val quantity: Int,
-        val paymentMethodId: Int,
-        val priceId: Int,
         val customPrice: Int?,
         val notes: String?,
         val dateCreated: Date
@@ -73,8 +63,6 @@ data class SaleProductResponse(
                         productId = entity.productId,
                         size = entity.size,
                         quantity = entity.quantity,
-                        paymentMethodId = entity.paymentMethodId,
-                        priceId = entity.priceId,
                         customPrice = entity.customPrice,
                         notes = entity.notes,
                         dateCreated = entity.dateCreated

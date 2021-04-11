@@ -1,17 +1,28 @@
-import React from 'react'
+import { required } from 'react-admin';
 import { Create, SimpleForm, TextInput, ReferenceInput, SelectInput } from 'react-admin'
 
 const SaleCreate = (props: any) => {
+    const initialValues = () => ({ paymentMethodId: 6, priceId: 10 });
     return (
         <Create title='Nueva Venta' {...props}>
-            <SimpleForm redirect="edit">
-                <ReferenceInput label="Lugar de Venta / Vendedor" source="sellerId" reference="api/v1/users">
+            <SimpleForm initialValues={initialValues} redirect="edit">
+                <TextInput source='notes' validate={required()} />
+
+                <ReferenceInput label="De Lugar de Venta / Vendedor" source="sellerId" reference="api/v1/users">
                     <SelectInput optionText="firstName" />
                 </ReferenceInput>
-                <ReferenceInput label="Cliente" source="clientId" reference="api/v1/users">
+
+                <ReferenceInput label="A Cliente" source="clientId" reference="api/v1/users">
                     <SelectInput optionText="firstName" />
                 </ReferenceInput>
-                <TextInput source='notes' />
+
+                <ReferenceInput label="Método de Pago" source="paymentMethodId" reference="api/v1/options/type/paymentMethod">
+                    <SelectInput optionText="name" />
+                </ReferenceInput>
+
+                <ReferenceInput label="Precio" source="priceId" reference="api/v1/options/type/price">
+                    <SelectInput optionText="name" />
+                </ReferenceInput>
             </SimpleForm>
         </Create>
     )

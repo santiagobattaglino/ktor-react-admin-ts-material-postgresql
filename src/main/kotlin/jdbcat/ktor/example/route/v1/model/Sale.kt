@@ -7,12 +7,16 @@ import java.util.*
 data class CreateSaleRequest(
         val sellerId: Int,
         val clientId: Int,
+        val paymentMethodId: Int,
+        val priceId: Int,
         val notes: String?
 ) {
     fun toEntity() = Sale(
             id = null,
             sellerId = sellerId,
             clientId = clientId,
+            paymentMethodId = paymentMethodId,
+            priceId = priceId,
             notes = notes,
             dateCreated = Date()
     )
@@ -21,6 +25,8 @@ data class CreateSaleRequest(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class EditSaleRequest(
         val sellerId: Int,
+        val paymentMethodId: Int,
+        val priceId: Int,
         val clientId: Int,
         val notes: String?
 ) {
@@ -28,6 +34,8 @@ data class EditSaleRequest(
             id = id,
             sellerId = sellerId,
             clientId = clientId,
+            paymentMethodId = paymentMethodId,
+            priceId = priceId,
             notes = notes,
             dateCreated = Date()
     )
@@ -37,6 +45,8 @@ data class SaleResponse(
         val id: Int,
         val sellerId: Int,
         val clientId: Int,
+        val paymentMethodId: Int,
+        val priceId: Int,
         val notes: String?,
         val dateCreated: Date
 ) {
@@ -46,6 +56,8 @@ data class SaleResponse(
                         id = entity.id!!,
                         sellerId = entity.sellerId,
                         clientId = entity.clientId,
+                        paymentMethodId = entity.paymentMethodId,
+                        priceId = entity.priceId,
                         notes = entity.notes,
                         dateCreated = entity.dateCreated
                 )

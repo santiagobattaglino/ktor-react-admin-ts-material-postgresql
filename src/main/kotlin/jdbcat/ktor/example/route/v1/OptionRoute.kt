@@ -1,5 +1,7 @@
 package jdbcat.ktor.example.route
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -7,6 +9,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import jdbcat.core.tx
 import jdbcat.ktor.example.db.dao.OptionDao
+import jdbcat.ktor.example.db.model.Filter
 import jdbcat.ktor.example.route.v1.model.CreateOptionRequest
 import jdbcat.ktor.example.route.v1.model.EditOptionRequest
 import jdbcat.ktor.example.route.v1.model.OptionResponse
@@ -49,9 +52,14 @@ fun Route.optionRoute() {
         // get by type
         get("/type/{type}") { _ ->
             val type = call.parameters["type"]!!
+            val mapper = jacksonObjectMapper()
+            val filter = call.parameters["filter"]?.let {
+                mapper.readValue<Filter>(it)
+            }
+
             dataSource.tx {
                 val response = dao
-                        .queryByType(type = type)
+                        .queryByType(type = type, filter = filter)
                         .map { OptionResponse.fromEntity(it) }
                         .toList()
                 call.response.header("X-Total-Count", response.size)

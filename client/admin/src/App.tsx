@@ -30,6 +30,7 @@ import OptionCreate from './components/option/OptionCreate';
 import OptionEdit from './components/option/OptionEdit';
 import OptionList from './components/option/OptionList';
 import ReportList from './components/report/ReportList';
+import Dash from './Dash';
 
 function App() {
     let apiUrl = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_API_URL_DEV : process.env.REACT_APP_API_URL_PROD;

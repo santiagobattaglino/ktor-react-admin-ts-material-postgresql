@@ -9,6 +9,8 @@ object Sales : Table(tableName = "sales") {
     val id = pgSerial("id", specifier = "PRIMARY KEY")
     val sellerId = integer("seller_id").nonnull()
     val clientId = integer("client_id").nonnull()
+    val paymentMethodId = integer("payment_method_id").nonnull()
+    val priceId = integer("price_id").nonnull()
     val notes = varchar("notes", size = 255)
     val dateCreated = javaDate("date_created").nonnull()
 }
@@ -17,6 +19,8 @@ data class Sale(
         val id: Int? = null,
         val sellerId: Int,
         val clientId: Int,
+        val paymentMethodId: Int,
+        val priceId: Int,
         val notes: String?,
         val dateCreated: Date
 ) {
@@ -26,6 +30,8 @@ data class Sale(
         }
         builder[Sales.sellerId] = sellerId
         builder[Sales.clientId] = clientId
+        builder[Sales.paymentMethodId] = paymentMethodId
+        builder[Sales.priceId] = priceId
         builder[Sales.notes] = notes
         builder[Sales.dateCreated] = dateCreated
     }
@@ -35,6 +41,8 @@ data class Sale(
                 id = extractor[Sales.id],
                 sellerId = extractor[Sales.sellerId],
                 clientId = extractor[Sales.clientId],
+                paymentMethodId = extractor[Sales.paymentMethodId],
+                priceId = extractor[Sales.priceId],
                 notes = extractor[Sales.notes],
                 dateCreated = extractor[Sales.dateCreated]
         )

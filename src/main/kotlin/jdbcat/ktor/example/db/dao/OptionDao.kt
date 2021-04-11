@@ -2,8 +2,11 @@ package jdbcat.ktor.example.db.dao
 
 import jdbcat.core.*
 import jdbcat.ktor.example.EntityNotFoundException
+import jdbcat.ktor.example.db.model.Filter
 import jdbcat.ktor.example.db.model.Option
 import jdbcat.ktor.example.db.model.Options
+import jdbcat.ktor.example.db.model.StockMovements
+import jdbcat.ktor.example.util.setRange
 import mu.KotlinLogging
 import javax.sql.DataSource
 
@@ -78,12 +81,21 @@ class OptionDao(private val dataSource: DataSource) {
                 ?: throw EntityNotFoundException(errorMessage = "Option id=$id cannot be found")
     }
 
-    suspend fun queryByType(type: String) = dataSource.txRequired { connection ->
-        val stmt = selectByTypeSqlTemplate
+    suspend fun queryByType(type: String, filter: Filter?) = dataSource.txRequired { connection ->
+        var stmt = selectByTypeSqlTemplate
                 .prepareStatement(connection)
                 .setColumns {
                     it[Options.type] = type
                 }
+
+        filter?.let { filter ->
+            filter.id?.let { id ->
+                stmt = selectByIdsSqlTemplate.prepareStatement(connection)
+                stmt.setArray(1, connection.createArrayOf("INT", id.toTypedArray()))
+            }
+            logger.debug { "selectAll() by productId, userId, id paged: $stmt" }
+        }
+
         logger.debug { "getByType(): $stmt" }
         stmt.executeQuery().asSequence().map {
             Option.extractFrom(it)
@@ -148,6 +160,15 @@ class OptionDao(private val dataSource: DataSource) {
 
         private val selectByIdSqlTemplate = sqlTemplate(Options) {
             "SELECT * FROM $tableName WHERE $id = ${id.v}"
+        }
+
+        private val selectByIdsSqlTemplate = sqlTemplate(Options) {
+            """
+            | SELECT *
+            |   FROM $tableName 
+            |   WHERE $id = ANY (?)
+            |   ORDER BY $id DESC
+            """
         }
 
         private val selectByTypeSqlTemplate = sqlTemplate(Options) {
