@@ -4,6 +4,7 @@ import jdbcat.core.*
 import jdbcat.ktor.example.EntityNotFoundException
 import jdbcat.ktor.example.db.model.Filter
 import jdbcat.ktor.example.db.model.Sale
+import jdbcat.ktor.example.db.model.SaleAliasFields
 import jdbcat.ktor.example.db.model.Sales
 import jdbcat.ktor.example.util.setRange
 import mu.KotlinLogging
@@ -68,9 +69,8 @@ class SaleDao(private val dataSource: DataSource) {
     suspend fun select(id: Int) = dataSource.txRequired { connection ->
         val stmt = selectByIdSqlTemplate
                 .prepareStatement(connection)
-                .setColumns {
-                    it[Sales.id] = id
-                }
+        stmt.setInt(1, id)
+
         logger.debug { "select($id): $stmt" }
         stmt.executeQuery()
                 .singleRowOrNull { Sale.extractFrom(it) }
@@ -81,8 +81,17 @@ class SaleDao(private val dataSource: DataSource) {
         return if (sort != null) {
             sqlTemplate(Sales) {
                 """
-                | SELECT *
-                |   FROM $tableName 
+                |   select *, COALESCE((
+                |   select sum(cost_x_quantity) from (
+                |        select CASE WHEN custom_price NOTNULL THEN sum(quantity * custom_price) ELSE sum(quantity * manufacturing_cost) END as cost_x_quantity
+                |        from sale_products join products
+                |        on sale_products.product_id = products.id
+                |        join sales
+                |        on sale_products.sale_id = sales.id
+                |        group by quantity, manufacturing_cost, custom_price
+                |    ) as cost_x_quantity
+                |  ), 0) as total 
+                |  from sales
                 |   ORDER BY ${sort[0]} ${sort[1]}
                 |   LIMIT ? OFFSET ?
                 """
@@ -90,8 +99,17 @@ class SaleDao(private val dataSource: DataSource) {
         } else {
             sqlTemplate(Sales) {
                 """
-                | SELECT *
-                |   FROM $tableName 
+                |   select *, COALESCE((
+                |   select sum(cost_x_quantity) from (
+                |        select CASE WHEN custom_price NOTNULL THEN sum(quantity * custom_price) ELSE sum(quantity * manufacturing_cost) END as cost_x_quantity
+                |        from sale_products join products
+                |        on sale_products.product_id = products.id
+                |        join sales
+                |        on sale_products.sale_id = sales.id
+                |        group by quantity, manufacturing_cost, custom_price
+                |    ) as cost_x_quantity
+                |  )), 0 as total 
+                |  from sales
                 |   ORDER BY $id DESC
                 |   LIMIT ? OFFSET ?
                 """
@@ -164,7 +182,6 @@ class SaleDao(private val dataSource: DataSource) {
     }
 
     companion object {
-
         private val createTableIfNotExistsSqlTemplate = sqlTemplate(Sales) {
             """
             | CREATE TABLE IF NOT EXISTS $tableName (
@@ -190,16 +207,38 @@ class SaleDao(private val dataSource: DataSource) {
         }
 
         private val selectByIdSqlTemplate = sqlTemplate(Sales) {
-            "SELECT * FROM $tableName WHERE $id = ${id.v}"
+            """
+            |  select *, COALESCE((
+            |   select sum(cost_x_quantity) from (
+            |        select CASE WHEN custom_price NOTNULL THEN sum(quantity * custom_price) ELSE sum(quantity * manufacturing_cost) END as cost_x_quantity
+            |        from sale_products join products
+            |        on sale_products.product_id = products.id
+            |        join sales
+            |        on sale_products.sale_id = sales.id
+            |        group by quantity, manufacturing_cost, custom_price
+            |    ) as cost_x_quantity
+            |  )), 0 as total 
+            |  from sales
+            |  WHERE sales.id = ${id.v}
+            """
         }
 
         private val selectBySellerIdSqlTemplate = sqlTemplate(Sales) {
             """
-            | SELECT *
-            |   FROM $tableName 
-            |   WHERE $sellerId = ${sellerId.v}
-            |   ORDER BY $id DESC
-            |   LIMIT ? OFFSET ?
+            |  select *, COALESCE((
+            |   select sum(cost_x_quantity) from (
+            |        select CASE WHEN custom_price NOTNULL THEN sum(quantity * custom_price) ELSE sum(quantity * manufacturing_cost) END as cost_x_quantity
+            |        from sale_products join products
+            |        on sale_products.product_id = products.id
+            |        join sales
+            |        on sale_products.sale_id = sales.id
+            |        group by quantity, manufacturing_cost, custom_price
+            |    ) as cost_x_quantity
+            |  ), 0) as total 
+            |  from $tableName
+            |  WHERE $sellerId = ${sellerId.v}
+            |  ORDER BY $id DESC
+            |  LIMIT ? OFFSET ?
             """
         }
 
@@ -216,10 +255,19 @@ class SaleDao(private val dataSource: DataSource) {
 
         private val selectByIdsSqlTemplate = sqlTemplate(Sales) {
             """
-            | SELECT *
-            |   FROM $tableName 
-            |   WHERE $id = ANY (?)
-            |   ORDER BY $id DESC
+            |  select *, COALESCE((
+            |   select sum(cost_x_quantity) from (
+            |        select CASE WHEN custom_price NOTNULL THEN sum(quantity * custom_price) ELSE sum(quantity * manufacturing_cost) END as cost_x_quantity
+            |        from sale_products join products
+            |        on sale_products.product_id = products.id
+            |        join sales
+            |        on sale_products.sale_id = sales.id
+            |        group by quantity, manufacturing_cost, custom_price
+            |    ) as cost_x_quantity
+            |  ), 0) as total 
+            |  from $tableName
+            |  WHERE $id = ANY (?)
+            |  ORDER BY $id DESC
             """
         }
 

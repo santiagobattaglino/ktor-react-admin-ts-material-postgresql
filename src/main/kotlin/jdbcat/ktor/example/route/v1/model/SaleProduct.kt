@@ -2,6 +2,7 @@ package jdbcat.ktor.example.route.v1.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import jdbcat.ktor.example.db.model.SaleProduct
+import jdbcat.ktor.example.util.getPriceById
 import java.util.*
 
 data class CreateSaleProductRequest(
@@ -53,7 +54,11 @@ data class SaleProductResponse(
         val quantity: Int,
         val customPrice: Int?,
         val notes: String?,
-        val dateCreated: Date
+        val dateCreated: Date,
+        val paymentMethodId: Int?,
+        val priceId: Int?,
+        val manufacturingCost: Int?,
+        val manufacturingCostTotal: Int?
 ) {
     companion object {
         fun fromEntity(entity: SaleProduct) =
@@ -65,7 +70,15 @@ data class SaleProductResponse(
                         quantity = entity.quantity,
                         customPrice = entity.customPrice,
                         notes = entity.notes,
-                        dateCreated = entity.dateCreated
+                        dateCreated = entity.dateCreated,
+                        paymentMethodId = entity.paymentMethodId,
+                        priceId = entity.priceId,
+                        manufacturingCost = entity.manufacturingCost,
+                        manufacturingCostTotal = entity.manufacturingCostTotal?.let {
+                            entity.priceId?.let { priceId ->
+                                getPriceById(it, priceId)
+                            }
+                        }
                 )
     }
 }

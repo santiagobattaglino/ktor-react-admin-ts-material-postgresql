@@ -15,6 +15,10 @@ object Sales : Table(tableName = "sales") {
     val dateCreated = javaDate("date_created").nonnull()
 }
 
+object SaleAliasFields : EphemeralTable() {
+    val total = integer("total").nonnull()
+}
+
 data class Sale(
         val id: Int? = null,
         val sellerId: Int,
@@ -22,18 +26,20 @@ data class Sale(
         val paymentMethodId: Int,
         val priceId: Int,
         val notes: String?,
-        val dateCreated: Date
+        val dateCreated: Date,
+        val total: Int? = null
 ) {
     fun copyValuesTo(builder: ColumnValueBuilder) {
-        if (id != null) {
+        if (id != null)
             builder[Sales.id] = id
-        }
         builder[Sales.sellerId] = sellerId
         builder[Sales.clientId] = clientId
         builder[Sales.paymentMethodId] = paymentMethodId
         builder[Sales.priceId] = priceId
         builder[Sales.notes] = notes
         builder[Sales.dateCreated] = dateCreated
+        if (total != null)
+            builder[SaleAliasFields.total] = total
     }
 
     companion object {
@@ -44,7 +50,8 @@ data class Sale(
                 paymentMethodId = extractor[Sales.paymentMethodId],
                 priceId = extractor[Sales.priceId],
                 notes = extractor[Sales.notes],
-                dateCreated = extractor[Sales.dateCreated]
+                dateCreated = extractor[Sales.dateCreated],
+                total = extractor[SaleAliasFields.total]
         )
     }
 }

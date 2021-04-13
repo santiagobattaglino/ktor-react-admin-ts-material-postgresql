@@ -146,16 +146,48 @@ class SaleProductDao(private val dataSource: DataSource) {
             """
         }
 
-        private val selectByIdSqlTemplate = sqlTemplate(SaleProducts) {
-            "SELECT * FROM $tableName WHERE $id = ${id.v}"
+        private val selectByIdSqlTemplate = sqlTemplate(SaleProducts, PriceFields) { saleProducts, priceFields ->
+            """
+            | select sale_products.*, sales.payment_method_id, sales.price_id, products.manufacturing_cost,
+            |   (select CASE WHEN custom_price NOTNULL THEN sum(quantity * custom_price) ELSE sum(quantity * products.manufacturing_cost) END as manufacturing_cost_total)
+            |   from ${saleProducts.tableName} 
+            |   join sales on sale_products.sale_id = sales.id
+            |   join products on sale_products.product_id = products.id
+            |   WHERE sale_products.id = ${saleProducts.id.v}
+            |   group by sale_products.id, sales.payment_method_id, sales.price_id, products.manufacturing_cost
+            """
         }
 
-        private val selectAllSqlTemplate = sqlTemplate(SaleProducts) {
-            "SELECT * FROM $tableName ORDER BY $id DESC LIMIT ? OFFSET ?"
+        object PriceFields : EphemeralTable() {
+            val paymentMethodId = integer("payment_methid_id").nonnull()
+            val priceId = integer("price_id").nonnull()
+            val manufacturingCost = integer("manufacturing_cost").nonnull()
+            val manufacturingCostTotal = integer("manufacturing_cost_total").nonnull()
         }
 
-        private val selectBySaleIdSqlTemplate = sqlTemplate(SaleProducts) {
-            "SELECT * FROM $tableName WHERE $saleId = ${saleId.v} ORDER BY $id"
+        private val selectAllSqlTemplate = sqlTemplate(SaleProducts, PriceFields) { saleProducts, priceFields ->
+            """
+            | select sale_products.*, sales.payment_method_id, sales.price_id, products.manufacturing_cost,
+            |   (select CASE WHEN custom_price NOTNULL THEN sum(quantity * custom_price) ELSE sum(quantity * products.manufacturing_cost) END as manufacturing_cost_total)
+            |   from ${saleProducts.tableName} 
+            |   join sales on sale_products.sale_id = sales.id
+            |   join products on sale_products.product_id = products.id
+            |   group by sale_products.id, sales.payment_method_id, sales.price_id, products.manufacturing_cost
+            |   ORDER BY ${saleProducts.id} DESC LIMIT ? OFFSET ?
+            """
+        }
+
+        private val selectBySaleIdSqlTemplate = sqlTemplate(SaleProducts, PriceFields) { saleProducts, priceFields ->
+            """
+            | select sale_products.*, sales.payment_method_id, sales.price_id, products.manufacturing_cost,
+            |   (select CASE WHEN custom_price NOTNULL THEN sum(quantity * custom_price) ELSE sum(quantity * products.manufacturing_cost) END as manufacturing_cost_total)
+            |   from ${saleProducts.tableName} 
+            |   join sales on sale_products.sale_id = sales.id
+            |   join products on sale_products.product_id = products.id
+            |   WHERE sale_products.sale_id = ${saleProducts.saleId.v}
+            |   group by sale_products.id, sales.payment_method_id, sales.price_id, products.manufacturing_cost
+            |   ORDER BY ${saleProducts.id} DESC
+            """
         }
 
         private val deleteById = sqlTemplate(SaleProducts) {

@@ -16,6 +16,13 @@ object SaleProducts : Table(tableName = "sale_products") {
     val dateCreated = javaDate("date_created").nonnull()
 }
 
+object PriceFields : EphemeralTable() {
+    val paymentMethodId = integer("payment_method_id").nonnull()
+    val priceId = integer("price_id").nonnull()
+    val manufacturingCost = integer("manufacturing_cost").nonnull()
+    val manufacturingCostTotal = integer("manufacturing_cost_total").nonnull()
+}
+
 data class SaleProduct(
         val id: Int? = null,
         val saleId: Int,
@@ -24,7 +31,11 @@ data class SaleProduct(
         val quantity: Int,
         val customPrice: Int?,
         val notes: String?,
-        val dateCreated: Date
+        val dateCreated: Date,
+        val paymentMethodId: Int? = null,
+        val priceId: Int? = null,
+        val manufacturingCost: Int? = null,
+        val manufacturingCostTotal: Int? = null
 ) {
     fun copyValuesTo(builder: ColumnValueBuilder) {
         if (id != null) {
@@ -37,6 +48,15 @@ data class SaleProduct(
         builder[SaleProducts.customPrice] = customPrice
         builder[SaleProducts.notes] = notes
         builder[SaleProducts.dateCreated] = dateCreated
+        if (paymentMethodId != null)
+            builder[PriceFields.paymentMethodId] = paymentMethodId
+        if (priceId != null)
+            builder[PriceFields.priceId] = priceId
+        if (manufacturingCost != null)
+            builder[PriceFields.manufacturingCost] = manufacturingCost
+        if (manufacturingCostTotal != null)
+            builder[PriceFields.manufacturingCostTotal] = manufacturingCostTotal
+
     }
 
     companion object {
@@ -48,7 +68,11 @@ data class SaleProduct(
                 quantity = extractor[SaleProducts.quantity],
                 customPrice = extractor[SaleProducts.customPrice],
                 notes = extractor[SaleProducts.notes],
-                dateCreated = extractor[SaleProducts.dateCreated]
+                dateCreated = extractor[SaleProducts.dateCreated],
+                paymentMethodId = extractor[PriceFields.paymentMethodId],
+                priceId = extractor[PriceFields.priceId],
+                manufacturingCost = extractor[PriceFields.manufacturingCost],
+                manufacturingCostTotal = extractor[PriceFields.manufacturingCostTotal]
         )
     }
 }

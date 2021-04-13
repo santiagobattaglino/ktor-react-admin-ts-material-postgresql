@@ -37,6 +37,9 @@ const SaleProductsList = (props: any) => {
 
                 <TextField source='size' label='Talle' />
                 <TextField source='quantity' label='Cantidad' />
+
+                <TextField source='manufacturingCostTotal' label='$' />
+
                 <TextField source='notes' label='Notas' />
 
                 <EditButton basePath='saleproducts' undoable={true} />
