@@ -56,7 +56,6 @@ data class SaleProduct(
             builder[PriceFields.manufacturingCost] = manufacturingCost
         if (manufacturingCostTotal != null)
             builder[PriceFields.manufacturingCostTotal] = manufacturingCostTotal
-
     }
 
     companion object {

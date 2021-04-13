@@ -5,8 +5,6 @@ import jdbcat.ktor.example.EntityNotFoundException
 import jdbcat.ktor.example.db.model.Filter
 import jdbcat.ktor.example.db.model.Option
 import jdbcat.ktor.example.db.model.Options
-import jdbcat.ktor.example.db.model.StockMovements
-import jdbcat.ktor.example.util.setRange
 import mu.KotlinLogging
 import javax.sql.DataSource
 

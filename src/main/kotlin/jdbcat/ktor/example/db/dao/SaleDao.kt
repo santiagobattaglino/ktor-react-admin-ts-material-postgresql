@@ -4,7 +4,6 @@ import jdbcat.core.*
 import jdbcat.ktor.example.EntityNotFoundException
 import jdbcat.ktor.example.db.model.Filter
 import jdbcat.ktor.example.db.model.Sale
-import jdbcat.ktor.example.db.model.SaleAliasFields
 import jdbcat.ktor.example.db.model.Sales
 import jdbcat.ktor.example.util.setRange
 import mu.KotlinLogging
