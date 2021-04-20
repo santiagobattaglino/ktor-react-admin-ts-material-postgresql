@@ -7,7 +7,7 @@ const Total = () => {
     const { data, total, loading, error } = useQuery({
         type: 'getList',
         resource: 'api/v1/sales',
-        payload: { pagination: { page: 1, perPage: 10 }, sort: { field: 'id', order: 'DESC' } }
+        payload: { pagination: { page: 1, perPage: 25 }, sort: { field: 'id', order: 'DESC' } }
     });
 
     if (loading) return <Loading />;

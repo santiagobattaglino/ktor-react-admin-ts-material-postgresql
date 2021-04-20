@@ -14,6 +14,31 @@ import {
     FormTab
 } from 'react-admin'
 import AddProductsButton from './AddProductsButton';
+import { useQuery } from 'react-admin';
+import { Loading, Error } from 'react-admin';
+
+const Total = () => {
+    const { data, total, loading, error } = useQuery({
+        type: 'getList',
+        resource: 'api/v1/sales',
+        payload: { pagination: { page: 1, perPage: 25 }, sort: { field: 'id', order: 'DESC' } }
+    });
+
+    if (loading) return <Loading />;
+    if (error) return <Error />;
+    console.log(data)
+
+    if (!data || data.length === 0) return null;
+
+    const sum = data.map(sales => sales.total).reduce((a, b) => a + b)
+    console.log(sum)
+
+    return (
+        <ul>
+            <li>Total: {sum}</li>
+        </ul>
+    );
+};
 
 const SaleEdit = (props: any) => {
     return (
@@ -60,6 +85,7 @@ const SaleEdit = (props: any) => {
                             <EditButton />
                         </Datagrid>
                     </ReferenceManyField>
+                    <Total />
                     <br />
                     <AddProductsButton {...props} />
                 </FormTab>
