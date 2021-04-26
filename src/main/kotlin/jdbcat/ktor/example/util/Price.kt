@@ -23,7 +23,7 @@ fun precioCapilla(manufacturingCost: Int): Int {
 }
 
 fun precioMenor(manufacturingCost: Int): Int {
-    return precioMayor(manufacturingCost) * PRICE_MULT_POR_MENOR
+    return round(precioMayor(manufacturingCost) * PRICE_MULT_POR_MENOR).toInt()
 }
 
 fun precioMl(manufacturingCost: Int): Int {

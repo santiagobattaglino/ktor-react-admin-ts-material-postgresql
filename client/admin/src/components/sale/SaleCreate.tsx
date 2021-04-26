@@ -8,7 +8,7 @@ const SaleCreate = (props: any) => {
             <SimpleForm initialValues={initialValues} redirect="edit">
                 <TextInput source='notes' validate={required()} />
 
-                <ReferenceInput label="De Lugar de Venta / Vendedor" source="sellerId" reference="api/v1/users">
+                <ReferenceInput validate={required()} label="De Lugar de Venta / Vendedor" source="sellerId" reference="api/v1/users">
                     <SelectInput optionText="firstName" />
                 </ReferenceInput>
 
