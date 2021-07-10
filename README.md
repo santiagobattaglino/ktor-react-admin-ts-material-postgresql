@@ -1,3 +1,7 @@
+# Upgrade react dependencies
+- npm outdated
+- npm update (stable)
+
 # Ktor backend with react-admin app
 
 ###### TODO: migrate departments to products

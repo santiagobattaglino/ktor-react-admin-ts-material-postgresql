@@ -10,6 +10,7 @@ import io.ktor.routing.*
 import jdbcat.core.tx
 import jdbcat.ktor.example.db.dao.OptionDao
 import jdbcat.ktor.example.db.model.Filter
+import jdbcat.ktor.example.route.v1.adminRoute
 import jdbcat.ktor.example.route.v1.model.CreateOptionRequest
 import jdbcat.ktor.example.route.v1.model.EditOptionRequest
 import jdbcat.ktor.example.route.v1.model.OptionResponse
@@ -21,8 +22,8 @@ private val logger = KotlinLogging.logger { }
 
 fun Route.optionRoute() {
 
-    val dataSource by inject<DataSource>()
-    val dao by inject<OptionDao>()
+    val dataSource by this.inject<DataSource>()
+    val dao by this.inject<OptionDao>()
 
     route("/options") {
 

@@ -146,7 +146,7 @@ class SaleProductDao(private val dataSource: DataSource) {
             """
         }
 
-        private val selectByIdSqlTemplate = sqlTemplate(SaleProducts, PriceFields) { saleProducts, priceFields ->
+        private val selectByIdSqlTemplate = sqlTemplate(SaleProducts, PriceFields) { saleProducts, _ ->
             """
             | select sale_products.*, sales.payment_method_id, sales.price_id, products.manufacturing_cost,
             |   (select CASE WHEN custom_price NOTNULL THEN sum(quantity * custom_price) ELSE sum(quantity * products.manufacturing_cost) END as manufacturing_cost_total)
@@ -165,7 +165,7 @@ class SaleProductDao(private val dataSource: DataSource) {
             val manufacturingCostTotal = integer("manufacturing_cost_total").nonnull()
         }
 
-        private val selectAllSqlTemplate = sqlTemplate(SaleProducts, PriceFields) { saleProducts, priceFields ->
+        private val selectAllSqlTemplate = sqlTemplate(SaleProducts, PriceFields) { saleProducts, _ ->
             """
             | select sale_products.*, sales.payment_method_id, sales.price_id, products.manufacturing_cost,
             |   (select CASE WHEN custom_price NOTNULL THEN sum(quantity * custom_price) ELSE sum(quantity * products.manufacturing_cost) END as manufacturing_cost_total)
@@ -177,7 +177,7 @@ class SaleProductDao(private val dataSource: DataSource) {
             """
         }
 
-        private val selectBySaleIdSqlTemplate = sqlTemplate(SaleProducts, PriceFields) { saleProducts, priceFields ->
+        private val selectBySaleIdSqlTemplate = sqlTemplate(SaleProducts, PriceFields) { saleProducts, _ ->
             """
             | select sale_products.*, sales.payment_method_id, sales.price_id, products.manufacturing_cost,
             |   (select CASE WHEN custom_price NOTNULL THEN sum(quantity * custom_price) ELSE sum(quantity * products.manufacturing_cost) END as manufacturing_cost_total)

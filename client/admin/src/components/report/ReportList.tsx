@@ -3,7 +3,7 @@ import { Datagrid, List, TextField, ReferenceField, FunctionField } from 'react-
 
 const ReportList = (props: any) => {
     return (
-        <List title="Disponibilidad de Productos" {...props} perPage={25}>
+        <List title="Disponibilidad de Productos" {...props} pagination={false}>
             <Datagrid>
                 <ReferenceField label="Producto" source="productId" reference="api/v1/products" sortBy="name">
                     <FunctionField

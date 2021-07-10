@@ -1,3 +1,4 @@
+import { Box } from '@material-ui/core';
 import React from 'react';
 import { Loading, Error } from 'react-admin';
 import { useQuery } from 'react-admin';
@@ -28,7 +29,7 @@ const Total = () => {
 
 const SaleList = (props: any) => {
     return (
-        <div>
+        <Box bgcolor="primary.main" borderRadius={16} color="background.paper" p={2}>
             <List title="Sales" {...props} perPage={25} sort={{ field: 'id', order: 'DESC' }}>
                 <Datagrid>
                     <TextField source='notes' label='Notas' />
@@ -57,8 +58,7 @@ const SaleList = (props: any) => {
                 </Datagrid>
             </List>
             <Total />
-        </div>
-
+        </Box>
     )
 }
 

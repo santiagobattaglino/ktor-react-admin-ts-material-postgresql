@@ -21,8 +21,8 @@ private val logger = KotlinLogging.logger { }
 
 fun Route.productRoute() {
 
-    val dataSource by inject<DataSource>()
-    val dao by inject<ProductDao>()
+    val dataSource by this.inject<DataSource>()
+    val dao by this.inject<ProductDao>()
 
     route("/products") {
 

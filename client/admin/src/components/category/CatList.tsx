@@ -3,7 +3,7 @@ import { Datagrid, DeleteButton, EditButton, List, TextField } from 'react-admin
 
 const CatList = (props: any) => {
     return (
-        <List title="Categorías" {...props} perPage={25} pagination={false}>
+        <List title="Categorías" {...props} pagination={false}>
             <Datagrid>
                 <TextField source='name' label='Nombre' />
                 <EditButton basePath='categories' undoable={false} />

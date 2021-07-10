@@ -4,6 +4,8 @@ plugins {
     id 'jacoco'
     id 'com.github.johnrengelman.shadow' version '4.0.1'
     id 'org.jetbrains.kotlin.jvm' version '1.3.61'
+    //id 'com.github.johnrengelman.shadow' version '7.0.0'
+    //id 'org.jetbrains.kotlin.jvm' version '1.5.20-M1'
 }
 
 repositories {
@@ -31,17 +33,18 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-//group 'jdbcat.examples'
-//version '1.0-SNAPSHOT'
+group 'jdbcat.examples'
+version '1.0-SNAPSHOT'
 
 dependencies {
-    implementation project(':jdbcat-core')
+    //implementation project(':jdbcat-core')
     //implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
     //implementation "com.github.mobiletoly:jdbcat:master-SNAPSHOT"
+    implementation group: "com.github.mobiletoly", name: "jdbcat-core", version: "master-SNAPSHOT", changing: true
 
     implementation "io.ktor:ktor-server-netty:$ktor_version"
     implementation "io.ktor:ktor-jackson:$ktor_version"
@@ -52,13 +55,24 @@ dependencies {
     implementation "io.github.microutils:kotlin-logging:$mu_logging_version"
     implementation "ch.qos.logback:logback-classic:$logback_version"
     implementation "org.postgresql:postgresql:$postgres_driver_version"
+    implementation "io.ktor:ktor-auth:$ktor_version"
 
-    testCompile("io.ktor:ktor-server-test-host:$ktor_version")
-    testCompile("org.testcontainers:postgresql:$testcontainers_version")
-    testCompile("org.amshove.kluent:kluent:$kluent_version")
+    // HTML
+    implementation "io.ktor:ktor-html-builder:$ktor_version"
 
-    testCompile('org.junit.jupiter:junit-jupiter-api:5.2.0')
-    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.2.0')
+    // Client
+    implementation "io.ktor:ktor-client-core:$ktor_version"
+    implementation "io.ktor:ktor-client-cio:$ktor_version"
+    implementation "io.ktor:ktor-client-apache:$ktor_version"
+    implementation "io.ktor:ktor-client-gson:$ktor_version"
+    implementation "io.ktor:ktor-client-logging:$ktor_version"
+
+    testImplementation("io.ktor:ktor-server-test-host:$ktor_version")
+    testImplementation("org.testcontainers:postgresql:$testcontainers_version")
+    testImplementation("org.amshove.kluent:kluent:$kluent_version")
+
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.2.0')
+    testImplementation('org.junit.jupiter:junit-jupiter-engine:5.2.0')
     testImplementation ("org.spekframework.spek2:spek-dsl-jvm:$spek_version")  {
         exclude group: 'org.jetbrains.kotlin'
     }

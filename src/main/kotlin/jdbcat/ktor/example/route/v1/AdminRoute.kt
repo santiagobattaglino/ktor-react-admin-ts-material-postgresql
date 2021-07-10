@@ -26,9 +26,9 @@ private val logger = KotlinLogging.logger { }
 
 fun Route.adminRoute() {
 
-    val dataSource by inject<DataSource>()
-    val departmentDao by inject<DepartmentDao>()
-    val employeeDao by inject<EmployeeDao>()
+    val dataSource by this.inject<DataSource>()
+    val departmentDao by this.inject<DepartmentDao>()
+    val employeeDao by this.inject<EmployeeDao>()
 
     route("/admin") {
 

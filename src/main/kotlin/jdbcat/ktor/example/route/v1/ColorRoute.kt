@@ -24,8 +24,8 @@ private val logger = KotlinLogging.logger { }
 
 fun Route.colorRoute() {
 
-    val dataSource by inject<DataSource>()
-    val colorDao by inject<ColorDao>()
+    val dataSource by this.inject<DataSource>()
+    val colorDao by this.inject<ColorDao>()
 
     route("/colors") {
 

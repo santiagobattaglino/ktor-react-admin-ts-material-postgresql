@@ -24,8 +24,8 @@ private val logger = KotlinLogging.logger { }
 
 fun Route.userRoute() {
 
-    val ds by inject<DataSource>()
-    val dao by inject<UserDao>()
+    val ds by this.inject<DataSource>()
+    val dao by this.inject<UserDao>()
 
     route("/users") {
 

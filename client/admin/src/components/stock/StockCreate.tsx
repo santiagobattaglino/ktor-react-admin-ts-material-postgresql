@@ -1,20 +1,20 @@
 import React from 'react'
-import {Create, SimpleForm, TextInput, ReferenceInput, SelectInput} from 'react-admin'
+import { Create, SimpleForm, TextInput, ReferenceInput, SelectInput, required } from 'react-admin'
 
 const choices = [
     { id: 1, name: 'name', },
     { id: 2, name: 'name' }
- ];
- const optionRenderer = (choice: any) => `${choice.id} ${choice.name}`;
+];
+const optionRenderer = (choice: any) => `${choice.id} ${choice.name}`;
 
 const StockCreate = (props: any) => {
     return (
         <Create title='Nuevo Movimiento de Stock' {...props}>
             <SimpleForm redirect="list">
-                <ReferenceInput perPage={false} label="Producto" source="productId" reference="api/v1/products">
+                <ReferenceInput validate={required()} perPage={false} label="Producto" source="productId" reference="api/v1/products">
                     <SelectInput choices={choices} optionText={optionRenderer} />
                 </ReferenceInput>
-                <ReferenceInput label="Usuario" source="userId" reference="api/v1/users" sortBy="firstName">
+                <ReferenceInput validate={required()} label="Usuario" source="userId" reference="api/v1/users" sortBy="firstName">
                     <SelectInput optionText="firstName" />
                 </ReferenceInput>
                 <TextInput source='t1' />

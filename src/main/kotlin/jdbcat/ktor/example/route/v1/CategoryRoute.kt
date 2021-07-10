@@ -18,14 +18,15 @@ import jdbcat.ktor.example.route.v1.model.CreateCategoryRequest
 import jdbcat.ktor.example.route.v1.model.EditCategoryRequest
 import mu.KotlinLogging
 import org.koin.ktor.ext.inject
+
 import javax.sql.DataSource
 
 private val logger = KotlinLogging.logger { }
 
 fun Route.categoryRoute() {
 
-    val dataSource by inject<DataSource>()
-    val categoryDao by inject<CategoryDao>()
+    val dataSource by this.inject<DataSource>()
+    val categoryDao by this.inject<CategoryDao>()
 
     route("/categories") {
 

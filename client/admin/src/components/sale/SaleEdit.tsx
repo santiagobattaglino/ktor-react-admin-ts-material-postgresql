@@ -17,30 +17,30 @@ import AddProductsButton from './AddProductsButton';
 import { useQuery } from 'react-admin';
 import { Loading, Error } from 'react-admin';
 
-const Total = () => {
-    const { data, total, loading, error } = useQuery({
-        type: 'getList',
-        resource: 'api/v1/sales',
-        payload: { pagination: { page: 1, perPage: 25 }, sort: { field: 'id', order: 'DESC' } }
-    });
-
-    if (loading) return <Loading />;
-    if (error) return <Error />;
-    console.log(data)
-
-    if (!data || data.length === 0) return null;
-
-    const sum = data.map(sales => sales.total).reduce((a, b) => a + b)
-    console.log(sum)
-
-    return (
-        <ul>
-            <li>Total: {sum}</li>
-        </ul>
-    );
-};
-
 const SaleEdit = (props: any) => {
+    const Total = () => {
+        const { data, total, loading, error } = useQuery({
+            type: 'getList',
+            resource: 'api/v1/saleproducts',
+            payload: { pagination: { page: 1, perPage: 25 }, sort: { field: 'id', order: 'DESC' }, filter: { saleId: props.id} }
+        });
+    
+        if (loading) return <Loading />;
+        if (error) return <Error />;
+        console.log(data)
+    
+        if (!data || data.length === 0) return null;
+    
+        const sum = data.map(saleproducts => saleproducts.manufacturingCostTotal).reduce((a, b) => a + b)
+        console.log(sum)
+    
+        return (
+            <ul>
+                <li>Total: {sum}</li>
+            </ul>
+        );
+    };
+
     return (
         <Edit title='Editar Venta' {...props}>
             <TabbedForm redirect="edit">
@@ -50,15 +50,15 @@ const SaleEdit = (props: any) => {
                         <SelectInput optionText="firstName" />
                     </ReferenceInput>
 
-                    <ReferenceInput label="A Cliente" source="clientId" reference="api/v1/users">
+                    <ReferenceInput validate={required()} label="A Cliente" source="clientId" reference="api/v1/users">
                         <SelectInput optionText="firstName" />
                     </ReferenceInput>
 
-                    <ReferenceInput label="Método de Pago" source="paymentMethodId" reference="api/v1/options/type/paymentMethod">
+                    <ReferenceInput validate={required()} label="Método de Pago" source="paymentMethodId" reference="api/v1/options/type/paymentMethod">
                         <SelectInput optionText="name" />
                     </ReferenceInput>
 
-                    <ReferenceInput label="Precio" source="priceId" reference="api/v1/options/type/price">
+                    <ReferenceInput validate={required()} label="Precio" source="priceId" reference="api/v1/options/type/price">
                         <SelectInput optionText="name" />
                     </ReferenceInput>
                 </FormTab>
@@ -80,7 +80,7 @@ const SaleEdit = (props: any) => {
                             <TextField source='quantity' label='Cantidad' />
 
                             <TextField source='manufacturingCostTotal' label='$' />
-                            
+
                             <TextField source='notes' label='Notas' />
                             <EditButton />
                         </Datagrid>

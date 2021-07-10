@@ -25,15 +25,14 @@ private val logger = KotlinLogging.logger { }
 
 fun Route.priceRoute() {
 
-    val ds by inject<DataSource>()
-    val dao by inject<PriceDao>()
+    val ds by this.inject<DataSource>()
+    val dao by this.inject<PriceDao>()
 
     route("/prices") {
 
         // get all
         get("/") { _ ->
             ds.tx { _ ->
-                val price = 10
                 val response = dao
                     .selectAll()
                     .map { PriceResponse.fromEntity(it, getManufacturingCost(it)) }

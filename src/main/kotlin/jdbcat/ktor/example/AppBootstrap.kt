@@ -2,6 +2,10 @@ package jdbcat.ktor.example
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.*
+import io.ktor.auth.*
+import io.ktor.client.*
+import io.ktor.client.engine.apache.*
+import io.ktor.client.features.json.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -10,6 +14,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
 import jdbcat.core.tx
+import jdbcat.ktor.example.client.printProducts
 import jdbcat.ktor.example.db.dao.*
 import jdbcat.ktor.example.route.optionRoute
 import jdbcat.ktor.example.route.v1.*
@@ -21,16 +26,39 @@ import java.util.*
 import javax.sql.DataSource
 
 private val logger = KotlinLogging.logger { }
+private lateinit var client: HttpClient
 
 // Perform application bootstrap
 fun Application.bootstrap() {
 
-    val appSettings by inject<AppSettings>()
+    //val appSettings by inject<AppSettings>()
 
+    // Client
+    bootstrapClient()
     // Create database tables (if needed)
     bootstrapDatabase()
     // Bootstrap REST
     bootstrapRest()
+}
+
+//@KtorExperimentalAPI
+private fun Application.bootstrapClient() = runBlocking {
+    //val client = HttpClient(CIO)
+    // Sequential requests
+    //val firstRequestContent: String = client.get("http://localhost:8080/path1")
+    //val secondRequestContent: String = client.get("http://localhost:8080/path2")
+    // Parallel requests
+    //val firstRequest: Deferred<String> = async { client.get("http://localhost:8080/path1") }
+    //val secondRequest: Deferred<String> = async { client.get("http://localhost:8080/path2") }
+    //val firstRequestContent = firstRequest.await()
+    //val secondRequestContent = secondRequest.await()
+    //println(firstRequestContent+"\n"+secondRequestContent)
+    //client.close()
+
+    // TODO Try with CIO
+    client = HttpClient(Apache) {
+        install(JsonFeature)
+    }
 }
 
 // Create tables and initialize data if necessary
@@ -76,6 +104,8 @@ private fun Application.bootstrapDatabase() = runBlocking {
         saleDao.createTableIfNotExists()
         saleProductDao.createTableIfNotExists()
         optionDao.createTableIfNotExists()
+
+        // TODO stockDao.syncWithMl()
     }
 }
 
@@ -135,6 +165,19 @@ private fun Application.bootstrapRest() {
         }
     }
 
+    install(Authentication) {
+        basic("auth-basic") {
+            //realm = "Access to the '/' path"
+            validate { credentials ->
+                if (credentials.name == "admin" && credentials.password == "admin") {
+                    UserIdPrincipal(credentials.name)
+                } else {
+                    null
+                }
+            }
+        }
+    }
+
     // Setup REST routing
     routing {
 
@@ -144,9 +187,11 @@ private fun Application.bootstrapRest() {
             application.log.debug(it.call.request.headers.toMap().toString())
         }
 
-        get("/") {
-            call.respondText("Hello :)")
-        }
+        //authenticate("auth-basic") {
+            get("/") {
+                printProducts(client, call)
+            }
+        //}
 
         static("static") {
             staticRootFolder = File("static")

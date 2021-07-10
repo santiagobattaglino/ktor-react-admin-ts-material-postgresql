@@ -16,8 +16,8 @@ import javax.sql.DataSource
 
 fun Route.employeeRoute() {
 
-    val dataSource by inject<DataSource>()
-    val employeeDao by inject<EmployeeDao>()
+    val dataSource by this.inject<DataSource>()
+    val employeeDao by this.inject<EmployeeDao>()
 
     route("/employees") {
 

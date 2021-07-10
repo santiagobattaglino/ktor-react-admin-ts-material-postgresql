@@ -30,15 +30,33 @@ import OptionCreate from './components/option/OptionCreate';
 import OptionEdit from './components/option/OptionEdit';
 import OptionList from './components/option/OptionList';
 import ReportList from './components/report/ReportList';
-import Dash from './Dash';
+import authProvider from './auth/EfimeroAuthProvider';
+//import Dash from './Dash';
+
+/*const httpClient = (url: any, options: any) => {
+    if (!options.headers) {
+        options.headers = new Headers({ Accept: 'application/json' });
+    }
+    let ls = localStorage.getItem('auth');
+    if (ls != null) {
+        const { token } = JSON.parse(ls);
+        options.headers.set('Authorization', `Bearer ${token}`);
+    }
+    return fetchUtils.fetchJson(url, options);
+};*/
 
 function App() {
     let apiUrl = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_API_URL_DEV : process.env.REACT_APP_API_URL_PROD;
     if (apiUrl === undefined)
         apiUrl = 'REACT_APP_API_URL undefined'
     console.log(apiUrl);
+
+    //const dataProvider = simpleRestProvider(apiUrl, httpClient, 'X-Total-Count');
+    const dataProvider = simpleRestProvider(apiUrl, fetchUtils.fetchJson, 'X-Total-Count');
+    
+    // TODO add auth: authProvider={authProvider}
     return (
-        <Admin dataProvider={simpleRestProvider(apiUrl, fetchUtils.fetchJson, 'X-Total-Count')}>
+        <Admin dataProvider={dataProvider}>
             <Resource
                 name='api/v1/products'
                 options={{ label: 'Productos' }}

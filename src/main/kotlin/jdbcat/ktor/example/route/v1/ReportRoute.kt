@@ -13,7 +13,7 @@ import org.koin.ktor.ext.inject
 
 fun Route.reportRoute() {
 
-    val employeeReportService by inject<EmployeeReportService>()
+    val employeeReportService by this.inject<EmployeeReportService>()
 
     route("/reports") {
 

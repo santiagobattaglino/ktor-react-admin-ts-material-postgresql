@@ -11,6 +11,7 @@ import java.util.Date
 object Categories : Table(tableName = "categories") {
     val id = pgSerial("id", specifier = "PRIMARY KEY")
     val name = varchar("name", size = 100, specifier = "UNIQUE").nonnull()
+    val desc = varchar("desc", size = 100, specifier = "UNIQUE").nonnull()
     val dateCreated = javaDate("date_created").nonnull()
 }
 

@@ -12,15 +12,15 @@ const SaleCreate = (props: any) => {
                     <SelectInput optionText="firstName" />
                 </ReferenceInput>
 
-                <ReferenceInput label="A Cliente" source="clientId" reference="api/v1/users">
+                <ReferenceInput validate={required()} label="A Cliente" source="clientId" reference="api/v1/users">
                     <SelectInput optionText="firstName" />
                 </ReferenceInput>
 
-                <ReferenceInput label="Método de Pago" source="paymentMethodId" reference="api/v1/options/type/paymentMethod">
+                <ReferenceInput validate={required()} label="Método de Pago" source="paymentMethodId" reference="api/v1/options/type/paymentMethod">
                     <SelectInput optionText="name" />
                 </ReferenceInput>
 
-                <ReferenceInput label="Precio" source="priceId" reference="api/v1/options/type/price">
+                <ReferenceInput validate={required()} label="Precio" source="priceId" reference="api/v1/options/type/price">
                     <SelectInput optionText="name" />
                 </ReferenceInput>
             </SimpleForm>
